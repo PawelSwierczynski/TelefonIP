@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientServerCommunicationPr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Security", "Security\Security.csproj", "{2630E373-2BCC-4646-BF6B-4BC7B09116E5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCPClient", "CCPClient\CCPClient.csproj", "{8C6AA67D-A923-4E68-83C4-7F58F0AA58A3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientsConnectionProtocol", "ClientsConnectionProtocol\ClientsConnectionProtocol.csproj", "{197E01AB-EC0F-47E3-B2D8-B549F4C2D433}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{2630E373-2BCC-4646-BF6B-4BC7B09116E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2630E373-2BCC-4646-BF6B-4BC7B09116E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2630E373-2BCC-4646-BF6B-4BC7B09116E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C6AA67D-A923-4E68-83C4-7F58F0AA58A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C6AA67D-A923-4E68-83C4-7F58F0AA58A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C6AA67D-A923-4E68-83C4-7F58F0AA58A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C6AA67D-A923-4E68-83C4-7F58F0AA58A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{197E01AB-EC0F-47E3-B2D8-B549F4C2D433}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{197E01AB-EC0F-47E3-B2D8-B549F4C2D433}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{197E01AB-EC0F-47E3-B2D8-B549F4C2D433}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{197E01AB-EC0F-47E3-B2D8-B549F4C2D433}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
