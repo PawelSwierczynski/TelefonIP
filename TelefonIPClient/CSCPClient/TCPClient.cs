@@ -14,32 +14,32 @@ namespace CSCPClient
         private int identifierOfAwaitedResponse;
         private int userToken;
         private readonly TcpClient tcpClient;
-        private CSCPPacket awaitedResponse;
         private readonly List<CSCPPacket> receivedMessages;
         private readonly List<CSCPPacket> sentMessages;
-        private Thread messageReceiver;
+        private Thread messageReceivingThread;
+        private IMessageReceiver messageReceiver;
 
         public TCPClient(string ipAddress, int portNumber)
         {
             endConnection = false;
             identifier = 0;
-            identifierOfAwaitedResponse = 0;
+            identifierOfAwaitedResponse = -1;
             userToken = 0;
             tcpClient = new TcpClient();
             tcpClient.Connect(ipAddress, portNumber);
-            awaitedResponse = null;
             receivedMessages = new List<CSCPPacket>();
             sentMessages = new List<CSCPPacket>();
+            messageReceiver = null;
         }
 
         public void Start()
         {
-            messageReceiver = new Thread(() =>
+            messageReceivingThread = new Thread(() =>
             {
                 StartReceivingMessages();
             });
 
-            messageReceiver.Start();
+            messageReceivingThread.Start();
         }
 
         private void StartReceivingMessages()
@@ -80,7 +80,7 @@ namespace CSCPClient
 
             if (message.Identifier == identifierOfAwaitedResponse)
             {
-                awaitedResponse = message;
+                GiveMessageReceiverAwaitedMessage(message);
             }
         }
 
@@ -106,11 +106,10 @@ namespace CSCPClient
 
             sentMessages.Add(message);
 
-            using (StreamWriter streamWriter = new StreamWriter(tcpClient.GetStream(), new UTF8Encoding(false)))
-            {
-                streamWriter.Write(message.Serialize());
-                streamWriter.Flush();
-            }
+            StreamWriter streamWriter = new StreamWriter(tcpClient.GetStream(), new UTF8Encoding(false));
+
+            streamWriter.Write(message.Serialize());
+            streamWriter.Flush();
         }
 
         public void Stop()
@@ -118,9 +117,14 @@ namespace CSCPClient
             SendMessage(Command.EndConnection, "");
         }
 
-        public CSCPPacket GetAwaitedResponse()
+        public void GiveMessageReceiverAwaitedMessage(CSCPPacket awaitedMessage)
         {
-            return awaitedResponse;
+            messageReceiver.RetrieveAwaitedMessage(awaitedMessage);
+        }
+
+        public void SubscribeToReceiveAwaitedMessage(IMessageReceiver messageReceiver)
+        {
+            this.messageReceiver = messageReceiver;
         }
     }
 }

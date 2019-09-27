@@ -12,10 +12,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using CSCPClient;
+using ClientServerCommunicationProtocol;
 
 namespace TelefonIPClient
 {
-    public partial class RegisterState : Window
+    public partial class RegisterState : Window, IMessageReceiver
     {
         private bool isWindowSwitched;
         private readonly ServerInteraction serverInteraction;
@@ -28,6 +29,7 @@ namespace TelefonIPClient
             isWindowSwitched = false;
             this.serverInteraction = serverInteraction;
             this.tcpClient = tcpClient;
+            this.tcpClient.SubscribeToReceiveAwaitedMessage(this);
 
             Closed += new EventHandler(Window_Closed);
         }
@@ -39,7 +41,7 @@ namespace TelefonIPClient
 
         private void ReturnButton_Click(object sender, RoutedEventArgs e)
         {
-            isWindowSwitched = false;
+            isWindowSwitched = true;
             LogInState logInState = new LogInState(serverInteraction, tcpClient);
             logInState.Show();
             Close();
@@ -50,6 +52,18 @@ namespace TelefonIPClient
             if (!isWindowSwitched)
             {
                 tcpClient.Stop();
+            }
+        }
+
+        public void RetrieveAwaitedMessage(CSCPPacket message)
+        {
+            switch (message.Command)
+            {
+                case Command.EndConnectionAck:
+                    break;
+                default:
+                    MessageBox.Show("Natrafiono na nieobsługiwany rozkaz!", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                    break;
             }
         }
     }

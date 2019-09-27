@@ -16,7 +16,7 @@ using ClientServerCommunicationProtocol;
 
 namespace TelefonIPClient
 {
-    public partial class LogInState : Window
+    public partial class LogInState : Window, IMessageReceiver
     {
         private bool isWindowSwitched;
         private readonly ServerInteraction serverInteraction;
@@ -29,6 +29,7 @@ namespace TelefonIPClient
             isWindowSwitched = false;
             serverInteraction = new ServerInteraction();
             tcpClient = new TCPClient("127.0.0.1", 17000);
+            tcpClient.SubscribeToReceiveAwaitedMessage(this);
             tcpClient.Start();
 
             Closed += new EventHandler(Window_Closed);
@@ -41,6 +42,9 @@ namespace TelefonIPClient
             isWindowSwitched = false;
             this.serverInteraction = serverInteraction;
             this.tcpClient = tcpClient;
+            this.tcpClient.SubscribeToReceiveAwaitedMessage(this);
+
+            Closed += new EventHandler(Window_Closed);
         }
 
         private void LogInButton_Click(object sender, RoutedEventArgs e)
@@ -61,6 +65,21 @@ namespace TelefonIPClient
             if (!isWindowSwitched)
             {
                 tcpClient.Stop();
+            }
+        }
+
+        public void RetrieveAwaitedMessage(CSCPPacket message)
+        {
+            switch (message.Command)
+            {
+                case Command.LogInInvalidCredentials:
+                    MessageBox.Show("Podano nieprawidłowy login lub hasło.", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                    break;
+                case Command.EndConnectionAck:
+                    break;
+                default:
+                    MessageBox.Show("Natrafiono na nieobsługiwany rozkaz!", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                    break;
             }
         }
     }
