@@ -16,7 +16,7 @@ namespace TelefonIPServer.Accounts
 
         private UserDatabaseSearchResult FindUserWithMatchingCredentials(LogInCredentials logInCredentials)
         {
-            List<Users> usersWithMatchingCredentials = databaseInteraction.RetrieveUsersWithMatchingCredentials(logInCredentials);
+            List<Users> usersWithMatchingCredentials = databaseInteraction.RetrieveUsersWithMatchingLogInCredentials(logInCredentials);
 
             if (usersWithMatchingCredentials.Count != 1)
             {
@@ -36,6 +36,13 @@ namespace TelefonIPServer.Accounts
             UserDatabaseSearchResult userDatabaseSearchResult = FindUserWithMatchingCredentials(logInCredentials);
 
             return userDatabaseSearchResult.IsUserFound;
+        }
+
+        public bool IsRegisterSuccessful(RegisterCredentials registerCredentials)
+        {
+            List<Users> usersWithMatchingCredentials = databaseInteraction.RetrieveUsersWithMatchingRegisterCredentials(registerCredentials);
+
+            return usersWithMatchingCredentials.Count == 0;
         }
     }
 }

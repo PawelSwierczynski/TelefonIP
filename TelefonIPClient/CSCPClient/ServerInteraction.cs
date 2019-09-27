@@ -18,5 +18,12 @@ namespace CSCPClient
 
             tcpClient.SendMessage(Command.LogInRequest, login + ";" + hashedPassword);
         }
+
+        public void SendRegisterMessage(TCPClient tcpClient, string login, string password, string email)
+        {
+            string hashedPassword = hashComputer.ComputeHashUsingSHA512(password);
+
+            tcpClient.SendMessage(Command.RegisterRequest, login + ";" + email + ";" + hashedPassword);
+        }
     }
 }

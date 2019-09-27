@@ -49,7 +49,23 @@ namespace TelefonIPClient
 
         private void LogInButton_Click(object sender, RoutedEventArgs e)
         {
-            serverInteraction.SendLogInMessage(tcpClient, LoginTextBox.Text, PasswordBox.Password);
+            CredentialsValidator credentialsValidator = new CredentialsValidator();
+
+            if (credentialsValidator.ValidateLogin(LoginTextBox.Text))
+            {
+                if (credentialsValidator.ValidatePassword(PasswordBox.Password))
+                {
+                    serverInteraction.SendLogInMessage(tcpClient, LoginTextBox.Text, PasswordBox.Password);
+                }
+                else
+                {
+                    MessageBox.Show("Podano za krótkie lub za długie hasło.", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Podano za krótki lub za długi login.", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
@@ -72,6 +88,9 @@ namespace TelefonIPClient
         {
             switch (message.Command)
             {
+                case Command.LogInAccepted:
+                    MessageBox.Show("Zalogowałeś się.", "Gratulacje", MessageBoxButton.OK, MessageBoxImage.Information);
+                    break;
                 case Command.LogInInvalidCredentials:
                     MessageBox.Show("Podano nieprawidłowy login lub hasło.", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
                     break;

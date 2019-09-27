@@ -36,7 +36,30 @@ namespace TelefonIPClient
 
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
+            CredentialsValidator credentialsValidator = new CredentialsValidator();
 
+            if (credentialsValidator.ValidateLogin(LoginTextBox.Text))
+            {
+                if (credentialsValidator.ValidatePassword(PasswordBox.Password))
+                {
+                    if (credentialsValidator.ValidateEmail(EmailTextBox.Text))
+                    {
+                        serverInteraction.SendRegisterMessage(tcpClient, LoginTextBox.Text, PasswordBox.Password, EmailTextBox.Text);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Podano za krótki lub za długi adres e-mail.", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Podano za krótkie lub za długie hasło.", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Podano za krótki lub za długi login.", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ReturnButton_Click(object sender, RoutedEventArgs e)
@@ -59,6 +82,12 @@ namespace TelefonIPClient
         {
             switch (message.Command)
             {
+                case Command.RegisterAccepted:
+                    MessageBox.Show("Zarejestrowano nowe konto.", "Rejestracja", MessageBoxButton.OK, MessageBoxImage.Information);
+                    break;
+                case Command.RegisterCredentialsInUse:
+                    MessageBox.Show("Podano istniejące w bazie dane!", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
+                    break;
                 case Command.EndConnectionAck:
                     break;
                 default:

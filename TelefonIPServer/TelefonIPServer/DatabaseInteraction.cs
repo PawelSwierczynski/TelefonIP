@@ -6,7 +6,7 @@ namespace TelefonIPServer
 {
     public sealed class DatabaseInteraction
     {
-        public List<Users> RetrieveUsersWithMatchingCredentials(LogInCredentials logInCredentials)
+        public List<Users> RetrieveUsersWithMatchingLogInCredentials(LogInCredentials logInCredentials)
         {
             List<Users> usersWithMatchingCredentials;
 
@@ -19,6 +19,41 @@ namespace TelefonIPServer
             }
 
             return usersWithMatchingCredentials;
+        }
+
+        public List<Users> RetrieveUsersWithMatchingRegisterCredentials(RegisterCredentials registerCredentials)
+        {
+            List<Users> usersWithMatchingCredentials;
+
+            using (var database = new TelefonIPDBEntities())
+            {
+                usersWithMatchingCredentials = (from user in database.Users
+                                                where user.Login == registerCredentials.Login ||
+                                                      user.EmailAddress == registerCredentials.Email
+                                                select user).ToList();
+            }
+
+            return usersWithMatchingCredentials;
+        }
+
+        public void RegisterAccount(RegisterCredentials registerCredentials)
+        {
+            using (var database = new TelefonIPDBEntities())
+            {
+                int lastUserId = (from user in database.Users
+                                  orderby user.UserID descending
+                                  select user.UserID).FirstOrDefault();
+
+                database.Users.Add(new Users()
+                {
+                    UserID = lastUserId + 1,
+                    Login = registerCredentials.Login,
+                    Password = registerCredentials.Password,
+                    EmailAddress = registerCredentials.Email,
+                });
+
+                database.SaveChanges();
+            }
         }
 
         public List<int> RetrieveTokensInUse()
@@ -42,6 +77,37 @@ namespace TelefonIPServer
             }
 
             return tokensInUse;
+        }
+
+        public void SaveUserToken(string login, int token)
+        {
+            using (var database = new TelefonIPDBEntities())
+            {
+                var userToReceiveToken = (from user in database.Users
+                                          where user.Login == login
+                                          select user).First();
+
+                userToReceiveToken.Token = token;
+
+                database.SaveChanges();
+            }
+        }
+
+        public void ClearToken(int token)
+        {
+            if (token != 0)
+            {
+                using (var database = new TelefonIPDBEntities())
+                {
+                    var userToGetTokenCleared = (from user in database.Users
+                                                 where user.Token == token
+                                                 select user).First();
+
+                    userToGetTokenCleared.Token = 0;
+
+                    database.SaveChanges();
+                }
+            }
         }
     }
 }

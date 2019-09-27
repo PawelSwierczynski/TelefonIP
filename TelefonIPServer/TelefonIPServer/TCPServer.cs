@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -15,13 +16,17 @@ namespace TelefonIPServer
     {
         private readonly AccountsManager accountsManager;
         private readonly DataParser dataParser;
+        private readonly DatabaseInteraction databaseInteraction;
         private readonly TcpListener TCPListener;
+        private readonly TokenGenerator tokenGenerator;
 
         public TCPServer(int portNumber)
         {
             accountsManager = new AccountsManager();
             dataParser = new DataParser();
+            databaseInteraction = new DatabaseInteraction();
             TCPListener = new TcpListener(IPAddress.Any, portNumber);
+            tokenGenerator = new TokenGenerator(new Random());
         }
 
         public void AcceptClients()
@@ -76,6 +81,9 @@ namespace TelefonIPServer
             {
                 case Command.EndConnection:
                     endConnection = true;
+
+                    databaseInteraction.ClearToken(message.UserToken);
+
                     ReplyMessage(message.Identifier, Command.EndConnectionAck, message.UserToken, "", streamWriter);
                     break;
 
@@ -84,11 +92,31 @@ namespace TelefonIPServer
 
                     if (accountsManager.IsLogInSuccessful(logInCredentials))
                     {
+                        List<int> tokensInUse = databaseInteraction.RetrieveTokensInUse();
+                        int token = tokenGenerator.RandomizeToken(tokensInUse);
 
+                        databaseInteraction.SaveUserToken(logInCredentials.Login, token);
+
+                        ReplyMessage(message.Identifier, Command.LogInAccepted, token, "", streamWriter);
                     }
                     else
                     {
                         ReplyMessage(message.Identifier, Command.LogInInvalidCredentials, message.UserToken, "", streamWriter);
+                    }
+
+                    break;
+                case Command.RegisterRequest:
+                    RegisterCredentials registerCredentials = dataParser.ExtractRegisterCredentials(message.Data);
+
+                    if (accountsManager.IsRegisterSuccessful(registerCredentials))
+                    {
+                        databaseInteraction.RegisterAccount(registerCredentials);
+
+                        ReplyMessage(message.Identifier, Command.RegisterAccepted, message.UserToken, "", streamWriter);
+                    }
+                    else
+                    {
+                        ReplyMessage(message.Identifier, Command.RegisterCredentialsInUse, message.UserToken, "", streamWriter);
                     }
 
                     break;

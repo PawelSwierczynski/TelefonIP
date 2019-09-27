@@ -71,6 +71,10 @@ namespace CSCPClient
         {
             switch (message.Command)
             {
+                case Command.LogInAccepted:
+                    userToken = message.UserToken;
+
+                    break;
                 case Command.EndConnectionAck:
                     endConnection = true;
                     tcpClient.Close();

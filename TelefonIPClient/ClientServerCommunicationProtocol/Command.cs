@@ -5,6 +5,9 @@
         LogInRequest,
         LogInAccepted,
         LogInInvalidCredentials,
+        RegisterRequest,
+        RegisterCredentialsInUse,
+        RegisterAccepted,
         EndConnection,
         EndConnectionAck
     }

@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Containers\RegisterCredentials.cs" />
     <Compile Include="DataParser.cs" />
     <Compile Include="Containers\ICredentials.cs" />
     <Compile Include="Containers\LogInCredentials.cs" />
