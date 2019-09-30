@@ -9,6 +9,7 @@
         RegisterCredentialsInUse,
         RegisterAccepted,
         EndConnection,
-        EndConnectionAck
+        EndConnectionAck,
+        EndConnectionDueToError
     }
 }

@@ -79,7 +79,7 @@ namespace TelefonIPServer
             return tokensInUse;
         }
 
-        public void SaveUserToken(string login, int token)
+        public void SaveUserTokenAndIP(string login, int token, string ipAddress)
         {
             using (var database = new TelefonIPDBEntities())
             {
@@ -88,6 +88,7 @@ namespace TelefonIPServer
                                           select user).First();
 
                 userToReceiveToken.Token = token;
+                userToReceiveToken.IPAddress = ipAddress;
 
                 database.SaveChanges();
             }

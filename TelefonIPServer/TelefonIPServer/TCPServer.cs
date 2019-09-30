@@ -57,16 +57,23 @@ namespace TelefonIPServer
             StreamWriter streamWriter = new StreamWriter(tcpClient.GetStream(), new UTF8Encoding(false));
             StreamReader streamReader = new StreamReader(tcpClient.GetStream(), new UTF8Encoding(false));
 
-            for (; ; )
+            try
             {
-                if (endConnection)
+                for (; ; )
                 {
-                    break;
+                    if (endConnection)
+                    {
+                        break;
+                    }
+
+                    message = new CSCPPacket(streamReader);
+
+                    AnalyzeMessage(ref endConnection, message, streamWriter, tcpClient);
                 }
-
-                message = new CSCPPacket(streamReader);
-
-                AnalyzeMessage(ref endConnection, message, streamWriter);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message);
             }
 
             streamWriter.Dispose();
@@ -75,7 +82,7 @@ namespace TelefonIPServer
             Console.WriteLine("Client ended a connection.");
         }
 
-        private void AnalyzeMessage(ref bool endConnection, CSCPPacket message, StreamWriter streamWriter)
+        private void AnalyzeMessage(ref bool endConnection, CSCPPacket message, StreamWriter streamWriter, TcpClient tcpClient)
         {
             switch (message.Command)
             {
@@ -86,7 +93,6 @@ namespace TelefonIPServer
 
                     ReplyMessage(message.Identifier, Command.EndConnectionAck, message.UserToken, "", streamWriter);
                     break;
-
                 case Command.LogInRequest:
                     LogInCredentials logInCredentials = dataParser.ExtractLogInCredentials(message.Data);
 
@@ -95,7 +101,9 @@ namespace TelefonIPServer
                         List<int> tokensInUse = databaseInteraction.RetrieveTokensInUse();
                         int token = tokenGenerator.RandomizeToken(tokensInUse);
 
-                        databaseInteraction.SaveUserToken(logInCredentials.Login, token);
+                        string ipAddress = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString();
+
+                        databaseInteraction.SaveUserTokenAndIP(logInCredentials.Login, token, ipAddress);
 
                         ReplyMessage(message.Identifier, Command.LogInAccepted, token, "", streamWriter);
                     }

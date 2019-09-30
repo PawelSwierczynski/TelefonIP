@@ -56,10 +56,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Contacts.xaml.cs">
+      <DependentUpon>Contacts.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CredentialsValidator.cs" />
+    <Compile Include="MainMenu.xaml.cs">
+      <DependentUpon>MainMenu.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RegisterState.xaml.cs">
       <DependentUpon>RegisterState.xaml</DependentUpon>
     </Compile>
+    <Page Include="Contacts.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="LogInState.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -71,6 +81,10 @@
     <Compile Include="LogInState.xaml.cs">
       <DependentUpon>LogInState.xaml</DependentUpon>
     </Compile>
+    <Page Include="MainMenu.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="RegisterState.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

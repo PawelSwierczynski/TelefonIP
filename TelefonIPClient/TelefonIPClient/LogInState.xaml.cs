@@ -89,7 +89,14 @@ namespace TelefonIPClient
             switch (message.Command)
             {
                 case Command.LogInAccepted:
-                    MessageBox.Show("Zalogowałeś się.", "Gratulacje", MessageBoxButton.OK, MessageBoxImage.Information);
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        isWindowSwitched = true;
+                        MainMenu mainMenu = new MainMenu(serverInteraction, tcpClient);
+                        mainMenu.Show();
+                        Close();
+                    });
+
                     break;
                 case Command.LogInInvalidCredentials:
                     MessageBox.Show("Podano nieprawidłowy login lub hasło.", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
