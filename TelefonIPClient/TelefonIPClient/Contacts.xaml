@@ -23,24 +23,25 @@
             <ColumnDefinition Width="0.5*"/>
         </Grid.ColumnDefinitions>
 
-        <ComboBox x:Name="ContactListComboBox" Grid.Row="0" Grid.Column="0" Height="22" Margin="10,10,0,0">
-            <ComboBoxItem IsSelected="True">Znajomi</ComboBoxItem>
+        <ComboBox x:Name="ContactListComboBox" Grid.Row="0" Grid.Column="0" Height="22" Margin="10,10,0,0" SelectionChanged="ContactListComboBox_SelectionChanged">
             <ComboBoxItem>Kontakty</ComboBoxItem>
             <ComboBoxItem>Czarna lista</ComboBoxItem>
+            <ComboBoxItem IsSelected="True">Znajomi</ComboBoxItem>
         </ComboBox>
         
-        <ListBox x:Name="ContactsListBox" Grid.Row="1" Grid.Column="0" Grid.RowSpan="6" Grid.ColumnSpan="2" Margin="10,0,0,0" Height="510" Width="250"/>
+        <ListBox x:Name="ContactsListBox" Grid.Row="1" Grid.Column="0" Grid.RowSpan="6" Grid.ColumnSpan="2" Margin="10,0,0,0" Height="510" Width="250" SelectionChanged="ContactsListBox_SelectionChanged"/>
 
-        <Button x:Name="NewContactButton" Content="Nowy kontakt" Grid.Row="1" Grid.Column="2" Margin="10,22,10,0" Height="22"/>
-        <Button x:Name="DeleteContactButton" Content="Usuń kontakt" Grid.Row="2" Grid.Column="2" Margin="10,15,10,0" Height="22" IsEnabled="False"/>
-        <Button x:Name="MoveContactButton" Content="Przenieś kontakt" Grid.Row="3" Grid.Column="2" Margin="10,15,10,0" Height="22" IsEnabled="False"/>
+        <Button x:Name="NewContactButton" Content="Nowy kontakt" Grid.Row="1" Grid.Column="2" Margin="10,22,10,0" Height="22" Click="NewContactButton_Click"/>
+        <Button x:Name="DeleteContactButton" Content="Usuń kontakt" Grid.Row="2" Grid.Column="2" Margin="10,15,10,0" Height="22" IsEnabled="False" Click="DeleteContactButton_Click"/>
+        <Button x:Name="MoveContactButton" Content="Przenieś kontakt" Grid.Row="3" Grid.Column="2" Margin="10,15,10,0" Height="22" IsEnabled="False" Click="MoveContactButton_Click"/>
 
         <ComboBox x:Name="MoveContactComboBox" Grid.Row="4" Grid.Column="2" Height="22" Margin="10,10,10,0" IsEnabled="False">
-            <ComboBoxItem IsSelected="True">Znajomi</ComboBoxItem>
             <ComboBoxItem>Kontakty</ComboBoxItem>
             <ComboBoxItem>Czarna lista</ComboBoxItem>
+            <ComboBoxItem IsSelected="True">Znajomi</ComboBoxItem>
         </ComboBox>
 
-        <Button x:Name="CallButton" Content="Zadzwoń" Grid.Row="5" Grid.Column="2" Margin="10,45,10,0" Height="40" IsEnabled="False"/>
+        <Button x:Name="CallButton" Content="Zadzwoń" Grid.Row="5" Grid.Column="2" Margin="10,45,10,0" Height="40" IsEnabled="False" Click="CallButton_Click"/>
+        <Button x:Name="ReturnButton" Content="Wróć" Grid.Row="6" Grid.Column="2" Margin="10,220,10,0" Height="22" Click="ReturnButton_Click"/>
     </Grid>
 </Window>

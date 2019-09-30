@@ -25,5 +25,25 @@ namespace CSCPClient
 
             tcpClient.SendMessage(Command.RegisterRequest, login + ";" + email + ";" + hashedPassword);
         }
+
+        public void SendRetrieveContacts(TCPClient tcpClient)
+        {
+            tcpClient.SendMessage(Command.ContactsRequest, "");
+        }
+
+        public void SendMoveContact(TCPClient tcpClient, string contactLogin, ContactType requestedContactType)
+        {
+            tcpClient.SendMessage(Command.MoveContactRequest, (int)requestedContactType + contactLogin);
+        }
+
+        public void SendDeleteContact(TCPClient tcpClient, string contactLogin)
+        {
+            tcpClient.SendMessage(Command.DeleteContactRequest, contactLogin);
+        }
+
+        public void SendAddContact(TCPClient tcpClient, string contactLogin)
+        {
+            tcpClient.SendMessage(Command.AddContactRequest, contactLogin);
+        }
     }
 }

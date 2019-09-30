@@ -15,7 +15,7 @@ namespace TelefonIPServer
     public sealed class TCPServer
     {
         private readonly AccountsManager accountsManager;
-        private readonly DataParser dataParser;
+        private readonly DataParsing.DataParser dataParser;
         private readonly DatabaseInteraction databaseInteraction;
         private readonly TcpListener TCPListener;
         private readonly TokenGenerator tokenGenerator;
@@ -23,7 +23,7 @@ namespace TelefonIPServer
         public TCPServer(int portNumber)
         {
             accountsManager = new AccountsManager();
-            dataParser = new DataParser();
+            dataParser = new DataParsing.DataParser();
             databaseInteraction = new DatabaseInteraction();
             TCPListener = new TcpListener(IPAddress.Any, portNumber);
             tokenGenerator = new TokenGenerator(new Random());
@@ -127,6 +127,41 @@ namespace TelefonIPServer
                         ReplyMessage(message.Identifier, Command.RegisterCredentialsInUse, message.UserToken, "", streamWriter);
                     }
 
+                    break;
+                case Command.ContactsRequest:
+                    string contactsData = databaseInteraction.GetContacts(message.UserToken);
+
+                    ReplyMessage(message.Identifier, Command.ContactsSent, message.UserToken, contactsData, streamWriter);
+
+                    break;
+                case Command.MoveContactRequest:
+                    databaseInteraction.MoveContact(message.UserToken, message.Data);
+
+                    ReplyMessage(message.Identifier, Command.MoveContactAccepted, message.UserToken, "", streamWriter);
+                    break;
+                case Command.DeleteContactRequest:
+                    databaseInteraction.DeleteContact(message.UserToken, message.Data);
+
+                    ReplyMessage(message.Identifier, Command.DeleteContactAccepted, message.UserToken, "", streamWriter);
+                    break;
+                case Command.AddContactRequest:
+                    if (databaseInteraction.DoesUserExist(message.Data))
+                    {
+                        if (!databaseInteraction.IsContactAlreadyInUse(message.UserToken, message.Data))
+                        {
+                            databaseInteraction.AddContact(message.UserToken, message.Data);
+
+                            ReplyMessage(message.Identifier, Command.AddContactAccepted, message.UserToken, "", streamWriter);
+                        }
+                        else
+                        {
+                            ReplyMessage(message.Identifier, Command.AddContactAlreadyInUse, message.UserToken, "", streamWriter);
+                        }
+                    }
+                    else
+                    {
+                        ReplyMessage(message.Identifier, Command.AddContactLoginNotFound, message.UserToken, "", streamWriter);
+                    }
                     break;
             }
         }

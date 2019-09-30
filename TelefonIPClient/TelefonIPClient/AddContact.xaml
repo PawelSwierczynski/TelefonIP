@@ -1,0 +1,32 @@
+﻿<Window x:Class="TelefonIPClient.AddContact"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TelefonIPClient"
+        mc:Ignorable="d"
+        Title="Dodaj kontakt" Height="200" Width="280">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.8*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.4*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="0.4*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label Content="Podaj login użytkownika" Grid.Row="1" Grid.Column="1" FontSize="12" HorizontalAlignment="Center"/>
+
+        <TextBox x:Name="LoginTextBox" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Stretch"/>
+
+        <Button x:Name="AddContactButton" Content="Dodaj kontakt" Grid.Row="3" Grid.Column="1" Margin="5,15,5,0" Click="AddContactButton_Click"/>
+        <Button x:Name="ReturnButton" Content="Wróć" Grid.Row="4" Grid.Column="1" Margin="5,15,5,0" Click="ReturnButton_Click"/>
+    </Grid>
+</Window>

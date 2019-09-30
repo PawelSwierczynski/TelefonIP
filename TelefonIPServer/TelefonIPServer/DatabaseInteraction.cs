@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using DataParsing.Containers;
+using ClientServerCommunicationProtocol;
 
 namespace TelefonIPServer
 {
@@ -108,6 +110,159 @@ namespace TelefonIPServer
 
                     database.SaveChanges();
                 }
+            }
+        }
+
+        public string GetContacts(int token)
+        {
+            string contactsData = "";
+            List<string> contacts = new List<string>();
+
+            using (var database = new TelefonIPDBEntities())
+            {
+                int userID = (from user in database.Users
+                              where user.Token == token
+                              select user.UserID).First();
+
+                contacts = (from contact in database.Contacts
+                           join contactUser in database.Users on contact.ContactUserID equals contactUser.UserID
+                           where contact.UserID == userID
+                           select "" + contact.ContactType + contactUser.Login).ToList();
+            }
+
+            if (contacts.Count > 0)
+            {
+                foreach (var contact in contacts)
+                {
+                    contactsData += contact + ";";
+                }
+
+                return contactsData.Substring(0, contactsData.Length - 1);
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        public void MoveContact(int token, string contactData)
+        {
+            DataParser dataParser = new DataParser();
+
+            Contact contact = dataParser.RetrieveContact(contactData);
+
+            using (var database = new TelefonIPDBEntities())
+            {
+                var userID = (from user in database.Users
+                              where user.Token == token
+                              select user.UserID).First();
+
+                var contactUserID = (from user in database.Users
+                                     where user.Login == contact.Name
+                                     select user.UserID).First();
+
+                var changedContact = (from contactToBeChanged in database.Contacts
+                                      where contactToBeChanged.UserID == userID &&
+                                      contactToBeChanged.ContactUserID == contactUserID
+                                      select contactToBeChanged).First();
+
+                changedContact.ContactType = (int)contact.ContactType;
+
+                database.SaveChanges();
+            }
+        }
+
+        public void DeleteContact(int token, string login)
+        {
+            using (var database = new TelefonIPDBEntities())
+            {
+                var userID = (from user in database.Users
+                              where user.Token == token
+                              select user.UserID).First();
+
+                var contactUserID = (from user in database.Users
+                                     where user.Login == login
+                                     select user.UserID).First();
+
+                var contactID = (from contact in database.Contacts
+                                 where contact.UserID == userID &&
+                                 contact.ContactUserID == contactUserID
+                                 select contact.ContactID).SingleOrDefault();
+
+                var attachedContact = new Contacts() { ContactID = contactID };
+
+                database.Contacts.Attach(attachedContact);
+                database.Contacts.Remove(attachedContact);
+
+                database.SaveChanges();
+            }
+        }
+
+        public bool IsContactAlreadyInUse(int token, string login)
+        {
+            List<Contacts> contacts;
+
+            using (var database = new TelefonIPDBEntities())
+            {
+                var userID = (from user in database.Users
+                              where user.Token == token
+                              select user.UserID).First();
+
+                var contactUserID = (from user in database.Users
+                                     where user.Login == login
+                                     select user.UserID).First();
+
+                contacts = (from contact in database.Contacts
+                            where contact.UserID == userID &&
+                            contact.ContactUserID == contactUserID
+                            select contact).ToList();
+            }
+
+            return contacts.Count > 0;
+        }
+
+        public bool DoesUserExist(string login)
+        {
+            bool doesUserExist;
+
+            using (var database = new TelefonIPDBEntities())
+            {
+                doesUserExist = (from user in database.Users
+                                 where user.Login == login
+                                 select user).ToList().Count > 0;
+            }
+
+            return doesUserExist;
+        }
+
+        public void AddContact(int token, string login)
+        {
+            using (var database = new TelefonIPDBEntities())
+            {
+                var contactID = (from contact in database.Contacts
+                                 orderby contact.ContactID descending
+                                 select contact.ContactID).SingleOrDefault() + 1;
+
+                var userID = (from user in database.Users
+                              where user.Token == token
+                              select user.UserID).Single();
+
+                var contactUserID = (from user in database.Users
+                                     where user.Login == login
+                                     select user.UserID).Single();
+
+                Contacts newContact = new Contacts()
+                {
+                    ContactID = contactID,
+                    UserID = userID,
+                    ContactUserID = contactUserID,
+                    ContactType = (int)ContactType.Contact,
+                    Timestamp = DateTime.Now
+                };
+
+                database.Contacts.Add(newContact);
+
+                database.SaveChanges();
             }
         }
     }
