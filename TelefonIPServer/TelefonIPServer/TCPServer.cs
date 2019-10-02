@@ -6,7 +6,6 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using ClientServerCommunicationProtocol;
-using DataParsing;
 using DataParsing.Containers;
 using TelefonIPServer.Accounts;
 
@@ -162,6 +161,19 @@ namespace TelefonIPServer
                     {
                         ReplyMessage(message.Identifier, Command.AddContactLoginNotFound, message.UserToken, "", streamWriter);
                     }
+                    break;
+                case Command.GetContactIPRequest:
+                    if (databaseInteraction.IsCallPossible(message.UserToken, message.Data))
+                    {
+                        string contactIPAddress = databaseInteraction.GetContactUserIPAddress(message.Data);
+
+                        ReplyMessage(message.Identifier, Command.GetContactIPSent, message.UserToken, contactIPAddress, streamWriter);
+                    }
+                    else
+                    {
+                        ReplyMessage(message.Identifier, Command.GetContactIPInactive, message.UserToken, "", streamWriter);
+                    }
+
                     break;
             }
         }

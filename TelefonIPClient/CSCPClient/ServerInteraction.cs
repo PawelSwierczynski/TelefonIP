@@ -45,5 +45,10 @@ namespace CSCPClient
         {
             tcpClient.SendMessage(Command.AddContactRequest, contactLogin);
         }
+
+        public void SendGetContactIP(TCPClient tcpClient, string contactLogin)
+        {
+            tcpClient.SendMessage(Command.GetContactIPRequest, contactLogin);
+        }
     }
 }

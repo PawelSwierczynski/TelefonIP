@@ -65,7 +65,7 @@ namespace TelefonIPServer
             using (var database = new TelefonIPDBEntities())
             {
                 allTokensInUse = (from user in database.Users
-                               select user.Token).ToList();
+                                  select user.Token).ToList();
             }
 
             List<int> tokensInUse = new List<int>();
@@ -125,9 +125,9 @@ namespace TelefonIPServer
                               select user.UserID).First();
 
                 contacts = (from contact in database.Contacts
-                           join contactUser in database.Users on contact.ContactUserID equals contactUser.UserID
-                           where contact.UserID == userID
-                           select "" + contact.ContactType + contactUser.Login).ToList();
+                            join contactUser in database.Users on contact.ContactUserID equals contactUser.UserID
+                            where contact.UserID == userID
+                            select "" + contact.ContactType + contactUser.Login).ToList();
             }
 
             if (contacts.Count > 0)
@@ -264,6 +264,49 @@ namespace TelefonIPServer
 
                 database.SaveChanges();
             }
+        }
+
+        public bool IsCallPossible(int token, string contactLogin)
+        {
+            bool isCallingUserBlocked;
+            bool isCalledUserActive;
+
+            using (var database = new TelefonIPDBEntities())
+            {
+                var callingUserID = (from user in database.Users
+                                     where user.Token == token
+                                     select user.UserID).Single();
+
+                var calledUserID = (from user in database.Users
+                                    where user.Login == contactLogin
+                                    select user.UserID).Single();
+
+                isCallingUserBlocked = (from contact in database.Contacts
+                                        where contact.ContactID == callingUserID &&
+                                        contact.UserID == calledUserID &&
+                                        contact.ContactType == 2
+                                        select contact).ToList().Count > 0;
+
+                isCalledUserActive = (from user in database.Users
+                                      where user.UserID == calledUserID
+                                      select user).Single().Token != 0;
+            }
+
+            return !isCallingUserBlocked && isCalledUserActive;
+        }
+
+        public string GetContactUserIPAddress(string contactLogin)
+        {
+            string ipAddress;
+
+            using (var database = new TelefonIPDBEntities())
+            {
+                ipAddress = (from user in database.Users
+                             where user.Login == contactLogin
+                             select user.IPAddress).Single();
+            }
+
+            return ipAddress;
         }
     }
 }
