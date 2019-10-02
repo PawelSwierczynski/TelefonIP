@@ -167,7 +167,7 @@ namespace TelefonIPServer
                     {
                         string contactIPAddress = databaseInteraction.GetContactUserIPAddress(message.Data);
 
-                        ReplyMessage(message.Identifier, Command.GetContactIPSent, message.UserToken, contactIPAddress, streamWriter);
+                        ReplyMessage(message.Identifier, Command.GetContactIPSent, message.UserToken, contactIPAddress + ";" + message.Data, streamWriter);
                     }
                     else
                     {

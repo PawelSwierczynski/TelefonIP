@@ -59,6 +59,9 @@
     <Compile Include="AddContact.xaml.cs">
       <DependentUpon>AddContact.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Calling.xaml.cs">
+      <DependentUpon>Calling.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Contacts.xaml.cs">
       <DependentUpon>Contacts.xaml</DependentUpon>
     </Compile>
@@ -70,6 +73,10 @@
       <DependentUpon>RegisterState.xaml</DependentUpon>
     </Compile>
     <Page Include="AddContact.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Calling.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -124,6 +131,14 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CCPClient\CCPClient.csproj">
+      <Project>{8c6aa67d-a923-4e68-83c4-7f58f0aa58a3}</Project>
+      <Name>CCPClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ClientsConnectionProtocol\ClientsConnectionProtocol.csproj">
+      <Project>{197e01ab-ec0f-47e3-b2d8-b549f4c2d433}</Project>
+      <Name>ClientsConnectionProtocol</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ClientServerCommunicationProtocol\ClientServerCommunicationProtocol.csproj">
       <Project>{4f9977cc-42ea-4321-b9f3-4b94d75d133d}</Project>
       <Name>ClientServerCommunicationProtocol</Name>

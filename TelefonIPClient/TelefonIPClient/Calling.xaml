@@ -1,0 +1,28 @@
+﻿<Window x:Class="TelefonIPClient.Calling"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TelefonIPClient"
+        mc:Ignorable="d"
+        Title="Dzwonienie" Height="200" Width="480">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.8*"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.8*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="0.8*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label x:Name="CallingLabel" Content="Dzwonienie do" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" FontSize="30" HorizontalAlignment="Center"/>
+
+        <Button x:Name="ReturnButton" Content="Wróć" Grid.Row="2" Grid.Column="1" Margin="5,15,5,0" Click="ReturnButton_Click"/>
+    </Grid>
+</Window>

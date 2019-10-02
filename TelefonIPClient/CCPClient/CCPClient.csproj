@@ -45,9 +45,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CCPCommand.cs" />
-    <Compile Include="CCPServer.cs" />
-    <Compile Include="ICallReceiver.cs" />
     <Compile Include="NAudioNetworkChat\AcmChatCodec.cs" />
     <Compile Include="NAudioNetworkChat\ALawChatCodec.cs" />
     <Compile Include="NAudioNetworkChat\G722ChatCodec.cs" />
@@ -58,7 +55,6 @@
     <Compile Include="NAudioNetworkChat\MuLawChatCodec.cs" />
     <Compile Include="NAudioNetworkChat\NetworkAudioPlayer.cs" />
     <Compile Include="NAudioNetworkChat\NetworkAudioSender.cs" />
-    <Compile Include="NAudioNetworkChat\SpeexChatCodec.cs" />
     <Compile Include="NAudioNetworkChat\TrueSpeechChatCodec.cs" />
     <Compile Include="NAudioNetworkChat\UdpAudioReceiver.cs" />
     <Compile Include="NAudioNetworkChat\UdpAudioSender.cs" />
