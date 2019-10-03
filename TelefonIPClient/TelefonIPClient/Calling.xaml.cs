@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using CSCPClient;
 using ClientServerCommunicationProtocol;
 
@@ -22,8 +23,9 @@ namespace TelefonIPClient
         private readonly ServerInteraction serverInteraction;
         private readonly TCPClient tcpClient;
         private string calledToken;
+        private readonly DispatcherTimer isSomebodyRingingTimer;
 
-        public Calling(ServerInteraction serverInteraction, TCPClient tcpClient, string calledToken)
+        public Calling(ServerInteraction serverInteraction, TCPClient tcpClient, string calledToken, DispatcherTimer isSomebodyRingingTimer)
         {
             InitializeComponent();
 
@@ -34,6 +36,9 @@ namespace TelefonIPClient
             this.calledToken = calledToken;
 
             Closed += new EventHandler(Window_Closed);
+
+            this.isSomebodyRingingTimer = isSomebodyRingingTimer;
+            this.isSomebodyRingingTimer.Stop();
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -49,6 +54,10 @@ namespace TelefonIPClient
             switch (message.Command)
             {
                 case Command.EndConnectionAck:
+                    break;
+                case Command.GetIsSomebodyRingingTrue:
+                    break;
+                case Command.GetIsSomebodyRingingFalse:
                     break;
                 default:
                     MessageBox.Show("Natrafiono na nieobsługiwany rozkaz!", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);

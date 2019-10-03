@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using CSCPClient;
 using ClientServerCommunicationProtocol;
 
@@ -21,8 +22,9 @@ namespace TelefonIPClient
         private bool isWindowSwitched;
         private readonly ServerInteraction serverInteraction;
         private readonly TCPClient tcpClient;
+        private readonly DispatcherTimer isSomebodyRingingTimer;
 
-        public AddContact(ServerInteraction serverInteraction, TCPClient tcpClient)
+        public AddContact(ServerInteraction serverInteraction, TCPClient tcpClient, DispatcherTimer isSomebodyRingingTimer)
         {
             InitializeComponent();
 
@@ -32,6 +34,8 @@ namespace TelefonIPClient
             this.tcpClient.SubscribeToReceiveAwaitedMessage(this);
 
             Closed += new EventHandler(Window_Closed);
+
+            this.isSomebodyRingingTimer = isSomebodyRingingTimer;
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -55,6 +59,18 @@ namespace TelefonIPClient
                 case Command.AddContactLoginNotFound:
                     MessageBox.Show("Nie odnaleziono użytkownika o podanym loginie!", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
                     break;
+                case Command.GetIsSomebodyRingingTrue:
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        isWindowSwitched = true;
+                        IncomingCall incomingCall = new IncomingCall(serverInteraction, tcpClient, isSomebodyRingingTimer, message.Data);
+                        incomingCall.Show();
+                        Close();
+                    });
+
+                    break;
+                case Command.GetIsSomebodyRingingFalse:
+                    break;
                 case Command.EndConnectionAck:
                     break;
                 default:
@@ -71,7 +87,7 @@ namespace TelefonIPClient
         private void ReturnButton_Click(object sender, RoutedEventArgs e)
         {
             isWindowSwitched = true;
-            Contacts contacts = new Contacts(serverInteraction, tcpClient);
+            Contacts contacts = new Contacts(serverInteraction, tcpClient, isSomebodyRingingTimer);
             contacts.Show();
             Close();
         }

@@ -29,6 +29,10 @@
         GetIsSomebodyRingingFalse,
         StartRingingRequest,
         StartRingingACK,
-        StartRingingRejected
+        StartRingingRejected,
+        DeclineCallRequest,
+        DeclineCallACK,
+        AcceptCallRequest,
+        AcceptCallACK
     }
 }

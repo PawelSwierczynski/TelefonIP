@@ -28,7 +28,7 @@ namespace TelefonIPClient
 
             isWindowSwitched = false;
             serverInteraction = new ServerInteraction();
-            tcpClient = new TCPClient("127.0.0.1", 17000);
+            tcpClient = new TCPClient("192.168.1.10", 17000);
             tcpClient.SubscribeToReceiveAwaitedMessage(this);
             tcpClient.Start();
 

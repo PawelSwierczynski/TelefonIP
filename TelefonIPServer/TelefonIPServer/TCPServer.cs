@@ -174,19 +174,13 @@ namespace TelefonIPServer
                         ReplyMessage(message.Identifier, Command.AddContactLoginNotFound, message.UserToken, "", streamWriter);
                     }
                     break;
-                /*case Command.GetContactIPRequest:
-                    if (databaseInteraction.IsCallPossible(message.UserToken, message.Data))
-                    {
-                        string contactIPAddress = databaseInteraction.GetContactUserIPAddress(message.Data);
+                case Command.GetContactIPRequest:
+                    string contactIPAddress = databaseInteraction.GetContactUserIPAddress(message.Data);
+                    string contactLogin = databaseInteraction.GetContactLogin(message.Data);
 
-                        ReplyMessage(message.Identifier, Command.GetContactIPSent, message.UserToken, contactIPAddress + ";" + message.Data, streamWriter);
-                    }
-                    else
-                    {
-                        ReplyMessage(message.Identifier, Command.GetContactIPInactive, message.UserToken, "", streamWriter);
-                    }
+                    ReplyMessage(message.Identifier, Command.GetContactIPSent, message.UserToken, contactIPAddress + ";" + contactLogin, streamWriter);
 
-                    break;*/
+                    break;
                 case Command.StartRingingRequest:
                     if (databaseInteraction.IsCallPossible(message.UserToken, message.Data))
                     {
@@ -212,6 +206,19 @@ namespace TelefonIPServer
                     {
                         ReplyMessage(message.Identifier, Command.GetIsSomebodyRingingFalse, message.UserToken, "", streamWriter);
                     }
+
+                    break;
+                case Command.AcceptCallRequest:
+                    callingStates[message.UserToken].CallingState = CallingState.CallAccepted;
+
+                    ReplyMessage(message.Identifier, Command.AcceptCallACK, message.UserToken, "", streamWriter);
+
+                    break;
+                case Command.DeclineCallRequest:
+                    callingStates[message.UserToken].Token = "";
+                    callingStates[message.UserToken].CallingState = CallingState.CallDeclined;
+
+                    ReplyMessage(message.Identifier, Command.DeclineCallACK, message.UserToken, "", streamWriter);
 
                     break;
             }

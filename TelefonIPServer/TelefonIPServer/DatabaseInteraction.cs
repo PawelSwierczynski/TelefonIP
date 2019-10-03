@@ -295,14 +295,14 @@ namespace TelefonIPServer
             return !isCallingUserBlocked && isCalledUserActive;
         }
 
-        public string GetContactUserIPAddress(string contactLogin)
+        public string GetContactUserIPAddress(string contactToken)
         {
             string ipAddress;
 
             using (var database = new TelefonIPDBEntities())
             {
                 ipAddress = (from user in database.Users
-                             where user.Login == contactLogin
+                             where user.Token == int.Parse(contactToken)
                              select user.IPAddress).Single();
             }
 
@@ -321,6 +321,20 @@ namespace TelefonIPServer
             }
 
             return contactToken;
+        }
+
+        public string GetContactLogin(string contactToken)
+        {
+            string contactLogin;
+
+            using (var database = new TelefonIPDBEntities())
+            {
+                contactLogin = (from user in database.Users
+                                where user.Token == int.Parse(contactToken)
+                                select user.Login).Single();
+            }
+
+            return contactLogin;
         }
     }
 }

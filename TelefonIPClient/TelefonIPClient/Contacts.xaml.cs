@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using CSCPClient;
 using ClientServerCommunicationProtocol;
 
@@ -23,8 +24,9 @@ namespace TelefonIPClient
         private readonly TCPClient tcpClient;
         private readonly DataParser dataParser;
         private List<Contact> contacts;
+        private DispatcherTimer isSomebodyRingingTimer;
 
-        public Contacts(ServerInteraction serverInteraction, TCPClient tcpClient)
+        public Contacts(ServerInteraction serverInteraction, TCPClient tcpClient, DispatcherTimer isSomebodyRingingTimer)
         {
             InitializeComponent();
 
@@ -39,6 +41,8 @@ namespace TelefonIPClient
             dataParser = new DataParser();
 
             serverInteraction.SendRetrieveContacts(tcpClient);
+
+            this.isSomebodyRingingTimer = isSomebodyRingingTimer;
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -68,14 +72,23 @@ namespace TelefonIPClient
                 case Command.DeleteContactAccepted:
                     serverInteraction.SendRetrieveContacts(tcpClient);
                     break;
-                case Command.StartRingingRejected:
-                    MessageBox.Show("Użytkownik, z którym chcesz rozmawiać, jest nieaktywny lub zablokował Cię. Prosimy spróbować ponownie później.", "Nie udało się nawiązać rozmowy", MessageBoxButton.OK, MessageBoxImage.Error);
+                case Command.GetIsSomebodyRingingTrue:
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        isWindowSwitched = true;
+                        IncomingCall incomingCall = new IncomingCall(serverInteraction, tcpClient, isSomebodyRingingTimer, message.Data);
+                        incomingCall.Show();
+                        Close();
+                    });
+
+                    break;
+                case Command.GetIsSomebodyRingingFalse:
                     break;
                 case Command.StartRingingACK:
                     Application.Current.Dispatcher.Invoke(delegate
                     {
                         isWindowSwitched = true;
-                        Calling calling = new Calling(serverInteraction, tcpClient, message.Data);
+                        Calling calling = new Calling(serverInteraction, tcpClient, message.Data, isSomebodyRingingTimer);
                         calling.Show();
                         Close();
                     });
@@ -92,7 +105,7 @@ namespace TelefonIPClient
         private void NewContactButton_Click(object sender, RoutedEventArgs e)
         {
             isWindowSwitched = true;
-            AddContact addContact = new AddContact(serverInteraction, tcpClient);
+            AddContact addContact = new AddContact(serverInteraction, tcpClient, isSomebodyRingingTimer);
             addContact.Show();
             Close();
         }
@@ -163,7 +176,7 @@ namespace TelefonIPClient
         private void ReturnButton_Click(object sender, RoutedEventArgs e)
         {
             isWindowSwitched = true;
-            MainMenu mainMenu = new MainMenu(serverInteraction, tcpClient);
+            MainMenu mainMenu = new MainMenu(serverInteraction, tcpClient, isSomebodyRingingTimer);
             mainMenu.Show();
             Close();
         }

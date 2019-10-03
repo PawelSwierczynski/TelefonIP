@@ -17,14 +17,17 @@ using ClientServerCommunicationProtocol;
 
 namespace TelefonIPClient
 {
-    public partial class MainMenu : Window, IMessageReceiver
+    public partial class IncomingCall : Window, IMessageReceiver
     {
         private bool isWindowSwitched;
         private readonly ServerInteraction serverInteraction;
         private readonly TCPClient tcpClient;
-        private readonly DispatcherTimer isSomebodyRingingTimer;
+        private DispatcherTimer isSomebodyRingingTimer;
+        private readonly string callingUserToken;
+        private string callingUserIP;
+        private string callingUserLogin;
 
-        public MainMenu(ServerInteraction serverInteraction, TCPClient tcpClient)
+        public IncomingCall(ServerInteraction serverInteraction, TCPClient tcpClient, DispatcherTimer isSomebodyRingingTimer, string callingUserToken)
         {
             InitializeComponent();
 
@@ -32,27 +35,16 @@ namespace TelefonIPClient
             this.serverInteraction = serverInteraction;
             this.tcpClient = tcpClient;
             this.tcpClient.SubscribeToReceiveAwaitedMessage(this);
-
-            Closed += new EventHandler(Window_Closed);
-
-            isSomebodyRingingTimer = new DispatcherTimer();
-            isSomebodyRingingTimer.Tick += SendRequestToCheckIfSomebodyIsRinging;
-            isSomebodyRingingTimer.Interval = new TimeSpan(0, 0, 3);
-            isSomebodyRingingTimer.Start();
-        }
-
-        public MainMenu(ServerInteraction serverInteraction, TCPClient tcpClient, DispatcherTimer isSomebodyRingingTimer)
-        {
-            InitializeComponent();
-
-            isWindowSwitched = false;
-            this.serverInteraction = serverInteraction;
-            this.tcpClient = tcpClient;
-            this.tcpClient.SubscribeToReceiveAwaitedMessage(this);
+            this.callingUserToken = callingUserToken;
+            callingUserIP = "";
+            callingUserLogin = "";
 
             Closed += new EventHandler(Window_Closed);
 
             this.isSomebodyRingingTimer = isSomebodyRingingTimer;
+            this.isSomebodyRingingTimer.Stop();
+
+            serverInteraction.SendGetContactIP(tcpClient, callingUserToken);
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -63,28 +55,36 @@ namespace TelefonIPClient
             }
         }
 
-        private void SendRequestToCheckIfSomebodyIsRinging(object sender, EventArgs e)
-        {
-            serverInteraction.SendGetIsSomebodyRinging(tcpClient);
-        }
-
         public void RetrieveAwaitedMessage(CSCPPacket message)
         {
             switch (message.Command)
             {
+                case Command.GetContactIPSent:
+                    string[] callingUserData = message.Data.Split(';');
+
+                    callingUserIP = callingUserData[0];
+                    callingUserLogin = callingUserData[1];
+
+                    CallingLabel.Content = callingUserLogin + " dzwoni.";
+
+                    break;
                 case Command.EndConnectionAck:
                     break;
-                case Command.GetIsSomebodyRingingTrue:
+                case Command.AcceptCallACK:
+                    //go to CallState
+
+                    break;
+                case Command.DeclineCallACK:
                     Application.Current.Dispatcher.Invoke(delegate
                     {
                         isWindowSwitched = true;
-                        IncomingCall incomingCall = new IncomingCall(serverInteraction, tcpClient, isSomebodyRingingTimer, message.Data);
-                        incomingCall.Show();
+
+                        isSomebodyRingingTimer.Start();
+                        MainMenu mainMenu = new MainMenu(serverInteraction, tcpClient, isSomebodyRingingTimer);
+                        mainMenu.Show();
                         Close();
                     });
 
-                    break;
-                case Command.GetIsSomebodyRingingFalse:
                     break;
                 default:
                     MessageBox.Show("Natrafiono na nieobsługiwany rozkaz!", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -92,17 +92,14 @@ namespace TelefonIPClient
             }
         }
 
-        private void ContactsButton_Click(object sender, RoutedEventArgs e)
+        private void AcceptCallButton_Click(object sender, RoutedEventArgs e)
         {
-            isWindowSwitched = true;
-            Contacts contacts = new Contacts(serverInteraction, tcpClient, isSomebodyRingingTimer);
-            contacts.Show();
-            Close();
+            serverInteraction.SendAcceptCall(tcpClient);
         }
 
-        private void OptionsButton_Click(object sender, RoutedEventArgs e)
+        private void DeclineCallButton_Click(object sender, RoutedEventArgs e)
         {
-
+            serverInteraction.SendDeclineCall(tcpClient);
         }
     }
 }

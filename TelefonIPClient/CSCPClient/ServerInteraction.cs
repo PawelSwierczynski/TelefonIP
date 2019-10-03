@@ -56,9 +56,19 @@ namespace CSCPClient
             tcpClient.SendSilentMessage(Command.GetIsSomebodyRingingRequest, "");
         }
 
-        public void SendStartRinging(TCPClient tcpClient, string contactLogin)
+        public void SendStartRinging(TCPClient tcpClient, string contactToken)
         {
-            tcpClient.SendMessage(Command.StartRingingRequest, contactLogin);
+            tcpClient.SendMessage(Command.StartRingingRequest, contactToken);
+        }
+
+        public void SendAcceptCall(TCPClient tcpClient)
+        {
+            tcpClient.SendMessage(Command.AcceptCallRequest, "");
+        }
+
+        public void SendDeclineCall(TCPClient tcpClient)
+        {
+            tcpClient.SendMessage(Command.DeclineCallRequest, "");
         }
     }
 }
