@@ -308,5 +308,19 @@ namespace TelefonIPServer
 
             return ipAddress;
         }
+
+        public string GetContactUserToken(string contactLogin)
+        {
+            string contactToken;
+
+            using (var database = new TelefonIPDBEntities())
+            {
+                contactToken = (from user in database.Users
+                                where user.Login == contactLogin
+                                select user.Token).Single().ToString();
+            }
+
+            return contactToken;
+        }
     }
 }

@@ -21,8 +21,9 @@ namespace TelefonIPClient
         private bool isWindowSwitched;
         private readonly ServerInteraction serverInteraction;
         private readonly TCPClient tcpClient;
+        private string calledToken;
 
-        public Calling(ServerInteraction serverInteraction, TCPClient tcpClient)
+        public Calling(ServerInteraction serverInteraction, TCPClient tcpClient, string calledToken)
         {
             InitializeComponent();
 
@@ -30,6 +31,7 @@ namespace TelefonIPClient
             this.serverInteraction = serverInteraction;
             this.tcpClient = tcpClient;
             this.tcpClient.SubscribeToReceiveAwaitedMessage(this);
+            this.calledToken = calledToken;
 
             Closed += new EventHandler(Window_Closed);
         }

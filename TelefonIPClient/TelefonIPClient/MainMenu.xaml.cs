@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 using CSCPClient;
 using ClientServerCommunicationProtocol;
 
@@ -21,6 +22,7 @@ namespace TelefonIPClient
         private bool isWindowSwitched;
         private readonly ServerInteraction serverInteraction;
         private readonly TCPClient tcpClient;
+        private readonly DispatcherTimer isSomebodyRingingTimer;
 
         public MainMenu(ServerInteraction serverInteraction, TCPClient tcpClient)
         {
@@ -32,6 +34,11 @@ namespace TelefonIPClient
             this.tcpClient.SubscribeToReceiveAwaitedMessage(this);
 
             Closed += new EventHandler(Window_Closed);
+
+            isSomebodyRingingTimer = new DispatcherTimer();
+            isSomebodyRingingTimer.Tick += SendRequestToCheckIfSomebodyIsRinging;
+            isSomebodyRingingTimer.Interval = new TimeSpan(0, 0, 3);
+            isSomebodyRingingTimer.Start();
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -42,11 +49,21 @@ namespace TelefonIPClient
             }
         }
 
+        private void SendRequestToCheckIfSomebodyIsRinging(object sender, EventArgs e)
+        {
+            serverInteraction.SendGetIsSomebodyRinging(tcpClient);
+        }
+
         public void RetrieveAwaitedMessage(CSCPPacket message)
         {
             switch (message.Command)
             {
                 case Command.EndConnectionAck:
+                    break;
+                case Command.GetIsSomebodyRingingTrue:
+                    MessageBox.Show("Ktoś dzwoni!", "HALOO", MessageBoxButton.OK, MessageBoxImage.Information);
+                    break;
+                case Command.GetIsSomebodyRingingFalse:
                     break;
                 default:
                     MessageBox.Show("Natrafiono na nieobsługiwany rozkaz!", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);

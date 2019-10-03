@@ -68,12 +68,18 @@ namespace TelefonIPClient
                 case Command.DeleteContactAccepted:
                     serverInteraction.SendRetrieveContacts(tcpClient);
                     break;
-                case Command.GetContactIPInactive:
+                case Command.StartRingingRejected:
                     MessageBox.Show("Użytkownik, z którym chcesz rozmawiać, jest nieaktywny lub zablokował Cię. Prosimy spróbować ponownie później.", "Nie udało się nawiązać rozmowy", MessageBoxButton.OK, MessageBoxImage.Error);
                     break;
-                case Command.GetContactIPSent:
-                    //TODO: Obsłuż otrzymany adres IP
-                    MessageBox.Show("Udało Ci się nawiązać połączenie.", "Sukces", MessageBoxButton.OK, MessageBoxImage.Information);
+                case Command.StartRingingACK:
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        isWindowSwitched = true;
+                        Calling calling = new Calling(serverInteraction, tcpClient, message.Data);
+                        calling.Show();
+                        Close();
+                    });
+
                     break;
                 case Command.EndConnectionAck:
                     break;
@@ -118,7 +124,8 @@ namespace TelefonIPClient
         {
             string contactLogin = (string)((ListBoxItem)ContactsListBox.SelectedItem).Content;
 
-            serverInteraction.SendGetContactIP(tcpClient, contactLogin);
+            //serverInteraction.SendGetContactIP(tcpClient, contactLogin);
+            serverInteraction.SendStartRinging(tcpClient, contactLogin);
         }
 
         private void ContactsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

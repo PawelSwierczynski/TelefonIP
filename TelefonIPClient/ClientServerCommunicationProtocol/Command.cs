@@ -23,6 +23,12 @@
         DeleteContactAccepted,
         EndConnection,
         EndConnectionAck,
-        EndConnectionDueToError
+        EndConnectionDueToError,
+        GetIsSomebodyRingingRequest,
+        GetIsSomebodyRingingTrue,
+        GetIsSomebodyRingingFalse,
+        StartRingingRequest,
+        StartRingingACK,
+        StartRingingRejected
     }
 }

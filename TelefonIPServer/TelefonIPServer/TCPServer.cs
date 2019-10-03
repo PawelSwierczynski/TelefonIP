@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -18,6 +19,7 @@ namespace TelefonIPServer
         private readonly DatabaseInteraction databaseInteraction;
         private readonly TcpListener TCPListener;
         private readonly TokenGenerator tokenGenerator;
+        private readonly ConcurrentDictionary<int, CallingUser> callingStates;
 
         public TCPServer(int portNumber)
         {
@@ -26,6 +28,7 @@ namespace TelefonIPServer
             databaseInteraction = new DatabaseInteraction();
             TCPListener = new TcpListener(IPAddress.Any, portNumber);
             tokenGenerator = new TokenGenerator(new Random());
+            callingStates = new ConcurrentDictionary<int, CallingUser>();
         }
 
         public void AcceptClients()
@@ -90,6 +93,13 @@ namespace TelefonIPServer
 
                     databaseInteraction.ClearToken(message.UserToken);
 
+                    if (message.UserToken != 0)
+                    {
+                        CallingUser callingUser;
+
+                        callingStates.TryRemove(message.UserToken, out callingUser);
+                    }
+
                     ReplyMessage(message.Identifier, Command.EndConnectionAck, message.UserToken, "", streamWriter);
                     break;
                 case Command.LogInRequest:
@@ -103,6 +113,8 @@ namespace TelefonIPServer
                         string ipAddress = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address.ToString();
 
                         databaseInteraction.SaveUserTokenAndIP(logInCredentials.Login, token, ipAddress);
+
+                        callingStates.TryAdd(token, new CallingUser("", CallingState.Idle));
 
                         ReplyMessage(message.Identifier, Command.LogInAccepted, token, "", streamWriter);
                     }
@@ -162,7 +174,7 @@ namespace TelefonIPServer
                         ReplyMessage(message.Identifier, Command.AddContactLoginNotFound, message.UserToken, "", streamWriter);
                     }
                     break;
-                case Command.GetContactIPRequest:
+                /*case Command.GetContactIPRequest:
                     if (databaseInteraction.IsCallPossible(message.UserToken, message.Data))
                     {
                         string contactIPAddress = databaseInteraction.GetContactUserIPAddress(message.Data);
@@ -172,6 +184,33 @@ namespace TelefonIPServer
                     else
                     {
                         ReplyMessage(message.Identifier, Command.GetContactIPInactive, message.UserToken, "", streamWriter);
+                    }
+
+                    break;*/
+                case Command.StartRingingRequest:
+                    if (databaseInteraction.IsCallPossible(message.UserToken, message.Data))
+                    {
+                        string contactToken = databaseInteraction.GetContactUserToken(message.Data);
+
+                        callingStates[int.Parse(contactToken)].Token = message.UserToken.ToString();
+                        callingStates[int.Parse(contactToken)].CallingState = CallingState.Ringing;
+
+                        ReplyMessage(message.Identifier, Command.GetContactIPSent, message.UserToken, contactToken, streamWriter);
+                    }
+                    else
+                    {
+                        ReplyMessage(message.Identifier, Command.StartRingingRejected, message.UserToken, "", streamWriter);
+                    }
+
+                    break;
+                case Command.GetIsSomebodyRingingRequest:
+                    if (callingStates[message.UserToken].CallingState == CallingState.Ringing)
+                    {
+                        ReplyMessage(message.Identifier, Command.GetIsSomebodyRingingTrue, message.UserToken, callingStates[message.UserToken].Token, streamWriter);
+                    }
+                    else
+                    {
+                        ReplyMessage(message.Identifier, Command.GetIsSomebodyRingingFalse, message.UserToken, "", streamWriter);
                     }
 
                     break;

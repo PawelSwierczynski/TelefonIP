@@ -50,5 +50,15 @@ namespace CSCPClient
         {
             tcpClient.SendMessage(Command.GetContactIPRequest, contactLogin);
         }
+
+        public void SendGetIsSomebodyRinging(TCPClient tcpClient)
+        {
+            tcpClient.SendSilentMessage(Command.GetIsSomebodyRingingRequest, "");
+        }
+
+        public void SendStartRinging(TCPClient tcpClient, string contactLogin)
+        {
+            tcpClient.SendMessage(Command.StartRingingRequest, contactLogin);
+        }
     }
 }

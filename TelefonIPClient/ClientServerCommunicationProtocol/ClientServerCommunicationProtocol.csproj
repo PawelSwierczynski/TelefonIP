@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CallingState.cs" />
+    <Compile Include="CallingUser.cs" />
     <Compile Include="Command.cs" />
     <Compile Include="Contact.cs" />
     <Compile Include="ContactType.cs" />

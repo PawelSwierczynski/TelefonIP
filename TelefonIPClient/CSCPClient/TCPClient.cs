@@ -18,6 +18,7 @@ namespace CSCPClient
         private readonly List<CSCPPacket> sentMessages;
         private Thread messageReceivingThread;
         private IMessageReceiver messageReceiver;
+        private StreamWriter streamWriter;
 
         public TCPClient(string ipAddress, int portNumber)
         {
@@ -49,6 +50,8 @@ namespace CSCPClient
             using (StreamReader streamReader = new StreamReader(tcpClient.GetStream(), new UTF8Encoding(false)))
             {
 
+                streamWriter = new StreamWriter(tcpClient.GetStream(), new UTF8Encoding(false));
+
                 for (; ; )
                 {
                     if (endConnection)
@@ -73,13 +76,16 @@ namespace CSCPClient
             {
                 case Command.LogInAccepted:
                     userToken = message.UserToken;
-
                     break;
                 case Command.EndConnectionAck:
                     endConnection = true;
                     tcpClient.Close();
-
                     break;
+                case Command.GetIsSomebodyRingingTrue:
+                    identifierOfAwaitedResponse = -1;
+
+                    GiveMessageReceiverAwaitedMessage(message);
+                    return;
             }
 
             if (message.Identifier == identifierOfAwaitedResponse)
@@ -90,7 +96,7 @@ namespace CSCPClient
 
         public void IncrementIdentifier()
         {
-            if (identifier == int.MaxValue)
+            if (identifier == 65535)
             {
                 identifier = 0;
             }
@@ -110,7 +116,13 @@ namespace CSCPClient
 
             sentMessages.Add(message);
 
-            StreamWriter streamWriter = new StreamWriter(tcpClient.GetStream(), new UTF8Encoding(false));
+            streamWriter.Write(message.Serialize());
+            streamWriter.Flush();
+        }
+
+        public void SendSilentMessage(Command command, string data)
+        {
+            CSCPPacket message = new CSCPPacket(identifier == 0 ? 65535 : identifier - 1, command, userToken, data);
 
             streamWriter.Write(message.Serialize());
             streamWriter.Flush();
