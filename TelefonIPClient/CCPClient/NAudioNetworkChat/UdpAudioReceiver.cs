@@ -17,8 +17,6 @@ namespace NAudioDemo.NetworkChatDemo
 
             udpListener = new UdpClient();
 
-            // To allow us to talk to ourselves for test purposes:
-            // http://stackoverflow.com/questions/687868/sending-and-receiving-udp-packets-between-two-programs-on-the-same-computer
             udpListener.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             udpListener.Client.Bind(endPoint);
 
