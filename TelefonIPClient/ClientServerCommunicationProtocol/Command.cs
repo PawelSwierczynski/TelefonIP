@@ -37,6 +37,10 @@
         GetCallStateRequest,
         GetCallStateAccepted,
         GetCallStateDeclined,
-        GetCallStateEnded
+        GetCallStateEnded,
+        EndCallRequest,
+        EndCallACK,
+        ResetCallStateRequest,
+        ResetCallStateACK
     }
 }

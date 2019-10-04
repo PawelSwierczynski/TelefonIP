@@ -117,7 +117,26 @@ namespace TelefonIPClient
                 case Command.GetCallStateAccepted:
                     break;
                 case Command.GetCallStateEnded:
-                    //TODO
+                    getCallStateTimer.Stop();
+
+                    serverInteraction.SendResetCallState(tcpClient, calledToken);
+                    break;
+                case Command.ResetCallStateACK:
+                case Command.EndCallACK:
+                    networkAudioPlayer.Dispose();
+                    networkAudioSender.Dispose();
+                    networkChatCodec.Dispose();
+
+                    isSomebodyRingingTimer.Start();
+
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        isWindowSwitched = true;
+                        Contacts contacts = new Contacts(serverInteraction, tcpClient, isSomebodyRingingTimer);
+                        contacts.Show();
+                        Close();
+                    });
+
                     break;
                 default:
                     MessageBox.Show("Natrafiono na nieobsługiwany rozkaz!", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -128,6 +147,8 @@ namespace TelefonIPClient
         private void EndCallButton_Click(object sender, RoutedEventArgs e)
         {
             getCallStateTimer.Stop();
+
+            serverInteraction.SendEndCall(tcpClient, calledToken);
 
             networkAudioPlayer.Dispose();
             networkAudioSender.Dispose();

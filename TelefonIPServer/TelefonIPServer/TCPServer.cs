@@ -238,6 +238,21 @@ namespace TelefonIPServer
                     }
 
                     break;
+                case Command.EndCallRequest:
+                    int callingStatesIndex = int.Parse(message.Data);
+
+                    callingStates[callingStatesIndex].CallingState = CallingState.EndedCall;
+
+                    ReplyMessage(message.Identifier, Command.EndCallACK, message.UserToken, "", streamWriter);
+                    break;
+                case Command.ResetCallStateRequest:
+                    int callingStateToBeReset = int.Parse(message.Data);
+
+                    callingStates[callingStateToBeReset].Token = "";
+                    callingStates[callingStateToBeReset].CallingState = CallingState.EndedCall;
+
+                    ReplyMessage(message.Identifier, Command.ResetCallStateACK, message.UserToken, "", streamWriter);
+                    break;
             }
         }
 
