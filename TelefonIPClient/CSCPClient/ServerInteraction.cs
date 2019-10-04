@@ -70,5 +70,10 @@ namespace CSCPClient
         {
             tcpClient.SendMessage(Command.DeclineCallRequest, "");
         }
+
+        public void SendGetCallState(TCPClient tcpClient, string calledToken)
+        {
+            tcpClient.SendMessage(Command.GetCallStateRequest, calledToken);
+        }
     }
 }

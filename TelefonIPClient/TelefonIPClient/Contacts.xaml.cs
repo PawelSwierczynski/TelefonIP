@@ -88,7 +88,7 @@ namespace TelefonIPClient
                     Application.Current.Dispatcher.Invoke(delegate
                     {
                         isWindowSwitched = true;
-                        Calling calling = new Calling(serverInteraction, tcpClient, message.Data, isSomebodyRingingTimer);
+                        Calling calling = new Calling(serverInteraction, tcpClient, message.Data, (string)((ListBoxItem)ContactsListBox.SelectedItem).Content, isSomebodyRingingTimer);
                         calling.Show();
                         Close();
                     });

@@ -221,6 +221,23 @@ namespace TelefonIPServer
                     ReplyMessage(message.Identifier, Command.DeclineCallACK, message.UserToken, "", streamWriter);
 
                     break;
+                case Command.GetCallStateRequest:
+                    int calledToken = int.Parse(message.Data);
+
+                    switch (callingStates[calledToken].CallingState)
+                    {
+                        case CallingState.CallAccepted:
+                            ReplyMessage(message.Identifier, Command.GetCallStateAccepted, message.UserToken, "", streamWriter);
+                            break;
+                        case CallingState.CallDeclined:
+                            ReplyMessage(message.Identifier, Command.GetCallStateDeclined, message.UserToken, "", streamWriter);
+                            break;
+                        case CallingState.EndedCall:
+                            ReplyMessage(message.Identifier, Command.GetCallStateEnded, message.UserToken, "", streamWriter);
+                            break;
+                    }
+
+                    break;
             }
         }
 

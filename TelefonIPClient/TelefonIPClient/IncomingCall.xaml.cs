@@ -68,7 +68,7 @@ namespace TelefonIPClient
                     Application.Current.Dispatcher.Invoke(delegate
                     {
                         CallingLabel.Content = callingUserLogin + " dzwoni.";
-                    }
+                    });
 
                     break;
                 case Command.EndConnectionAck:

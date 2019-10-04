@@ -23,9 +23,11 @@ namespace TelefonIPClient
         private readonly ServerInteraction serverInteraction;
         private readonly TCPClient tcpClient;
         private string calledToken;
+        private string calledLogin;
         private readonly DispatcherTimer isSomebodyRingingTimer;
+        private readonly DispatcherTimer getCallStateTimer;
 
-        public Calling(ServerInteraction serverInteraction, TCPClient tcpClient, string calledToken, DispatcherTimer isSomebodyRingingTimer)
+        public Calling(ServerInteraction serverInteraction, TCPClient tcpClient, string calledToken, string calledLogin, DispatcherTimer isSomebodyRingingTimer)
         {
             InitializeComponent();
 
@@ -39,6 +41,14 @@ namespace TelefonIPClient
 
             this.isSomebodyRingingTimer = isSomebodyRingingTimer;
             this.isSomebodyRingingTimer.Stop();
+
+            this.calledLogin = calledLogin;
+            CallingLabel.Content = "Dzwonisz do " + this.calledLogin + ".";
+
+            getCallStateTimer = new DispatcherTimer();
+            getCallStateTimer.Tick += SendRequestToGetCallState;
+            getCallStateTimer.Interval = new TimeSpan(0, 0, 1);
+            getCallStateTimer.Start();
         }
 
         private void Window_Closed(object sender, EventArgs e)
@@ -47,6 +57,11 @@ namespace TelefonIPClient
             {
                 tcpClient.Stop();
             }
+        }
+
+        private void SendRequestToGetCallState(object sender, EventArgs e)
+        {
+            serverInteraction.SendGetCallState(tcpClient, calledToken);
         }
 
         public void RetrieveAwaitedMessage(CSCPPacket message)
@@ -58,6 +73,31 @@ namespace TelefonIPClient
                 case Command.GetIsSomebodyRingingTrue:
                     break;
                 case Command.GetIsSomebodyRingingFalse:
+                    break;
+                case Command.GetCallStateAccepted:
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        isWindowSwitched = true;
+                        //Call call = new Call()
+                        //call.Show();
+                        Close();
+                    });
+
+                    break;
+                case Command.GetCallStateDeclined:
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        MessageBox.Show(calledLogin + " odrzucił Twoją prośbę o rozmowę.", "Prośba odrzucona", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                        getCallStateTimer.Stop();
+                        isSomebodyRingingTimer.Start();
+
+                        isWindowSwitched = true;
+                        Contacts contacts = new Contacts(serverInteraction, tcpClient, isSomebodyRingingTimer);
+                        contacts.Show();
+                        Close();
+                    });
+
                     break;
                 default:
                     MessageBox.Show("Natrafiono na nieobsługiwany rozkaz!", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
