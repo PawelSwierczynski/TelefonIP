@@ -24,6 +24,6 @@
         <Label x:Name="CallingLabel" Content="" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" FontSize="30" HorizontalAlignment="Center"/>
         <Label x:Name="TimeCounterLabel" Content="" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" FontSize="30" HorizontalAlignment="Center"/>
 
-        <Button x:Name="ReturnButton" Content="Zakończ" Grid.Row="3" Grid.Column="1" Margin="5,15,5,0"/>
+        <Button x:Name="EndCallButton" Content="Zakończ" Grid.Row="3" Grid.Column="1" Margin="5,15,5,0" Click="EndCallButton_Click"/>
     </Grid>
 </Window>

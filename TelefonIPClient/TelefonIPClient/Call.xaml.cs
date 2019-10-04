@@ -45,6 +45,7 @@ namespace TelefonIPClient
             this.tcpClient.SubscribeToReceiveAwaitedMessage(this);
             this.calledToken = calledToken;
             this.calledIP = calledIP;
+            this.isSomebodyRingingTimer = isSomebodyRingingTimer;
 
             Closed += new EventHandler(Window_Closed);
 
@@ -122,6 +123,22 @@ namespace TelefonIPClient
                     MessageBox.Show("Natrafiono na nieobsługiwany rozkaz!", "Błąd", MessageBoxButton.OK, MessageBoxImage.Error);
                     break;
             }
+        }
+
+        private void EndCallButton_Click(object sender, RoutedEventArgs e)
+        {
+            getCallStateTimer.Stop();
+
+            networkAudioPlayer.Dispose();
+            networkAudioSender.Dispose();
+            networkChatCodec.Dispose();
+
+            isSomebodyRingingTimer.Start();
+
+            isWindowSwitched = true;
+            Contacts contacts = new Contacts(serverInteraction, tcpClient, isSomebodyRingingTimer);
+            contacts.Show();
+            Close();
         }
     }
 }
