@@ -77,7 +77,7 @@ namespace TelefonIPClient
                     Application.Current.Dispatcher.Invoke(delegate
                     {
                         isWindowSwitched = true;
-                        Call call = new Call(serverInteraction, tcpClient, callingUserToken, callingUserLogin, callingUserIP, isSomebodyRingingTimer);
+                        Call call = new Call(serverInteraction, tcpClient, callingUserToken, callingUserLogin, callingUserIP, isSomebodyRingingTimer, false);
                         call.Show();
                         Close();
                     });

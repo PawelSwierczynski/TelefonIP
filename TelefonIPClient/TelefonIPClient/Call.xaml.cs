@@ -33,8 +33,9 @@ namespace TelefonIPClient
         private NetworkAudioPlayer networkAudioPlayer;
         private NetworkAudioSender networkAudioSender;
         private INetworkChatCodec networkChatCodec;
+        private bool isUserCalling;
 
-        public Call(ServerInteraction serverInteraction, TCPClient tcpClient, string calledToken, string calledLogin, string calledIP, DispatcherTimer isSomebodyRingingTimer)
+        public Call(ServerInteraction serverInteraction, TCPClient tcpClient, string calledToken, string calledLogin, string calledIP, DispatcherTimer isSomebodyRingingTimer, bool isUserCalling)
         {
             InitializeComponent();
 
@@ -53,6 +54,8 @@ namespace TelefonIPClient
             callDuration = new TimeSpan(0, 0, 0);
             TimeCounterLabel.Content = callDuration.ToString();
 
+            this.isUserCalling = isUserCalling;
+
             getCallStateTimer = new DispatcherTimer();
             getCallStateTimer.Tick += SendRequestToGetCallState;
             getCallStateTimer.Interval = new TimeSpan(0, 0, 1);
@@ -65,8 +68,19 @@ namespace TelefonIPClient
 
         private void Connect()
         {
-            IPEndPoint receiverEndPoint = new IPEndPoint(IPAddress.Any, 17001);
-            IPEndPoint senderEndPoint = new IPEndPoint(IPAddress.Parse(calledIP), 17001);
+            IPEndPoint receiverEndPoint;
+            IPEndPoint senderEndPoint;
+
+            if (isUserCalling)
+            {
+                receiverEndPoint = new IPEndPoint(IPAddress.Any, 17001);
+                senderEndPoint = new IPEndPoint(IPAddress.Parse(calledIP), 17002);
+            }
+            else
+            {
+                receiverEndPoint = new IPEndPoint(IPAddress.Any, 17002);
+                senderEndPoint = new IPEndPoint(IPAddress.Parse(calledIP), 17001);
+            }
 
             networkAudioPlayer = new NetworkAudioPlayer(networkChatCodec, new UdpAudioReceiver(receiverEndPoint));
             networkAudioSender = new NetworkAudioSender(networkChatCodec, 0, new UdpAudioSender(senderEndPoint));

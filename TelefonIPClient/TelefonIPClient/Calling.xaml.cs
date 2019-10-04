@@ -84,7 +84,7 @@ namespace TelefonIPClient
                         getCallStateTimer.Stop();
 
                         isWindowSwitched = true;
-                        Call call = new Call(serverInteraction, tcpClient, calledToken, calledLogin, calledUserIP, isSomebodyRingingTimer);
+                        Call call = new Call(serverInteraction, tcpClient, calledToken, calledLogin, calledUserIP, isSomebodyRingingTimer, true);
                         call.Show();
                         Close();
                     });
