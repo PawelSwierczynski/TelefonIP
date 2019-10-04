@@ -79,6 +79,8 @@ namespace TelefonIPClient
                     break;
                 case Command.GetIsSomebodyRingingFalse:
                     break;
+                case Command.GetCallStateAccepted:
+                    break;
                 case Command.GetCallStateEnded:
                     //TODO
                     break;
