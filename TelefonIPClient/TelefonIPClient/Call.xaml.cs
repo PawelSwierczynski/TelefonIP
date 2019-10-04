@@ -65,7 +65,7 @@ namespace TelefonIPClient
 
         private void Connect()
         {
-            IPEndPoint ipEndPoint = new IPEndPoint(new IPAddress(Encoding.UTF8.GetBytes(calledIP)), 17001);
+            IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse(calledIP), 17001);
 
             networkAudioPlayer = new NetworkAudioPlayer(networkChatCodec, new UdpAudioReceiver(17001));
             networkAudioSender = new NetworkAudioSender(networkChatCodec, 0, new UdpAudioSender(ipEndPoint));
