@@ -14,6 +14,7 @@ namespace NAudioDemo.NetworkChatDemo
         public UdpAudioReceiver(IPEndPoint endPoint)
         {
             udpListener = new UdpClient();
+            udpListener.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             udpListener.Client.Bind(endPoint);
 
             ThreadPool.QueueUserWorkItem(ListenerThread, endPoint);

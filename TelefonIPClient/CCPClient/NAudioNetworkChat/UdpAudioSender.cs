@@ -9,6 +9,7 @@ namespace NAudioDemo.NetworkChatDemo
         public UdpAudioSender(IPEndPoint endPoint)
         {
             udpSender = new UdpClient();
+            udpListener.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             udpSender.Connect(endPoint);
         }
 
