@@ -26,7 +26,7 @@ namespace TelefonIPClient
         private string calledLogin;
         private readonly DispatcherTimer isSomebodyRingingTimer;
         private readonly DispatcherTimer getCallStateTimer;
-        private readonly TimeSpan callDuration;
+        private TimeSpan callDuration;
 
         public Call(ServerInteraction serverInteraction, TCPClient tcpClient, string calledToken, string calledLogin, string calledIP, DispatcherTimer isSomebodyRingingTimer)
         {
@@ -64,7 +64,7 @@ namespace TelefonIPClient
         {
             serverInteraction.SendGetCallState(tcpClient, calledToken);
 
-            callDuration.Add(new TimeSpan(0, 0, 1));
+            callDuration = callDuration.Add(new TimeSpan(0, 0, 1));
 
             TimeCounterLabel.Content = callDuration.ToString();
         }
