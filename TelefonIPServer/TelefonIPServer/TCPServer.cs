@@ -239,11 +239,6 @@ namespace TelefonIPServer
 
                     break;
                 case Command.EndCallRequest:
-                    foreach (var element in callingStates)
-                    {
-                        Console.WriteLine(element.Key + ", " + element.Value.Token + ", " + element.Value.CallingState);
-                    }
-
                     int callingStatesIndex = int.Parse(message.Data);
 
                     callingStates[callingStatesIndex].CallingState = CallingState.EndedCall;
@@ -256,11 +251,6 @@ namespace TelefonIPServer
                     ReplyMessage(message.Identifier, Command.EndCallACK, message.UserToken, "", streamWriter);
                     break;
                 case Command.ResetCallStateRequest:
-                    foreach (var element in callingStates)
-                    {
-                        Console.WriteLine(element.Key + ", " + element.Value.Token + ", " + element.Value.CallingState);
-                    }
-
                     int callingStateToBeReset = int.Parse(message.Data);
 
                     Console.WriteLine(callingStateToBeReset);
