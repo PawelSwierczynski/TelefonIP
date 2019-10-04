@@ -298,11 +298,12 @@ namespace TelefonIPServer
         public string GetContactUserIPAddress(string contactToken)
         {
             string ipAddress;
+            int parsedContactToken = int.Parse(contactToken);
 
             using (var database = new TelefonIPDBEntities())
             {
                 ipAddress = (from user in database.Users
-                             where user.Token == int.Parse(contactToken)
+                             where user.Token == parsedContactToken
                              select user.IPAddress).Single();
             }
 
@@ -326,11 +327,12 @@ namespace TelefonIPServer
         public string GetContactLogin(string contactToken)
         {
             string contactLogin;
+            int parsedContactToken = int.Parse(contactToken);
 
             using (var database = new TelefonIPDBEntities())
             {
                 contactLogin = (from user in database.Users
-                                where user.Token == int.Parse(contactToken)
+                                where user.Token == parsedContactToken
                                 select user.Login).Single();
             }
 

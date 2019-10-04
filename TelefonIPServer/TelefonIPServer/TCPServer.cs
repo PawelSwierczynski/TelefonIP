@@ -182,14 +182,14 @@ namespace TelefonIPServer
 
                     break;
                 case Command.StartRingingRequest:
-                    if (databaseInteraction.IsCallPossible(message.UserToken, message.Data))
-                    {
-                        string contactToken = databaseInteraction.GetContactUserToken(message.Data);
+                    string contactToken = databaseInteraction.GetContactUserToken(message.Data);
 
+                    if (databaseInteraction.IsCallPossible(message.UserToken, message.Data) && callingStates.ContainsKey(int.Parse(contactToken)))
+                    {
                         callingStates[int.Parse(contactToken)].Token = message.UserToken.ToString();
                         callingStates[int.Parse(contactToken)].CallingState = CallingState.Ringing;
 
-                        ReplyMessage(message.Identifier, Command.GetContactIPSent, message.UserToken, contactToken, streamWriter);
+                        ReplyMessage(message.Identifier, Command.StartRingingACK, message.UserToken, contactToken, streamWriter);
                     }
                     else
                     {

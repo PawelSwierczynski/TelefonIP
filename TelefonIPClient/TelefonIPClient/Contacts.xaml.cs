@@ -94,6 +94,9 @@ namespace TelefonIPClient
                     });
 
                     break;
+                case Command.StartRingingRejected:
+                    MessageBox.Show("Użytkownik, z którym chcesz się skontaktować, jest nieaktywny lub zablokował Cię. Prosimy spróbować ponownie później.", "Nie udało się skontaktować", MessageBoxButton.OK, MessageBoxImage.Information);
+                    break;
                 case Command.EndConnectionAck:
                     break;
                 default:
@@ -136,8 +139,6 @@ namespace TelefonIPClient
         private void CallButton_Click(object sender, RoutedEventArgs e)
         {
             string contactLogin = (string)((ListBoxItem)ContactsListBox.SelectedItem).Content;
-
-            //serverInteraction.SendGetContactIP(tcpClient, contactLogin);
             serverInteraction.SendStartRinging(tcpClient, contactLogin);
         }
 

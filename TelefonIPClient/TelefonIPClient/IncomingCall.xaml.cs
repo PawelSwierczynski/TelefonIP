@@ -65,7 +65,10 @@ namespace TelefonIPClient
                     callingUserIP = callingUserData[0];
                     callingUserLogin = callingUserData[1];
 
-                    CallingLabel.Content = callingUserLogin + " dzwoni.";
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        CallingLabel.Content = callingUserLogin + " dzwoni.";
+                    }
 
                     break;
                 case Command.EndConnectionAck:
