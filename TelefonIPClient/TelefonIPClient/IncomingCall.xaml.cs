@@ -74,7 +74,13 @@ namespace TelefonIPClient
                 case Command.EndConnectionAck:
                     break;
                 case Command.AcceptCallACK:
-                    //go to CallState
+                    Application.Current.Dispatcher.Invoke(delegate
+                    {
+                        isWindowSwitched = true;
+                        Call call = new Call(serverInteraction, tcpClient, callingUserToken, callingUserLogin, callingUserIP, isSomebodyRingingTimer);
+                        call.Show();
+                        Close();
+                    });
 
                     break;
                 case Command.DeclineCallACK:

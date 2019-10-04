@@ -46,9 +46,10 @@ namespace CSCPClient
             tcpClient.SendMessage(Command.AddContactRequest, contactLogin);
         }
 
-        public void SendGetContactIP(TCPClient tcpClient, string contactLogin)
+
+        public void SendGetContactIP(TCPClient tcpClient, string contactToken)
         {
-            tcpClient.SendMessage(Command.GetContactIPRequest, contactLogin);
+            tcpClient.SendMessage(Command.GetContactIPRequest, contactToken);
         }
 
         public void SendGetIsSomebodyRinging(TCPClient tcpClient)

@@ -74,22 +74,32 @@ namespace TelefonIPClient
                     break;
                 case Command.GetIsSomebodyRingingFalse:
                     break;
-                case Command.GetCallStateAccepted:
+                case Command.GetContactIPSent:
+                    string[] calledUserData = message.Data.Split(';');
+
+                    string calledUserIP = calledUserData[0];
+
                     Application.Current.Dispatcher.Invoke(delegate
                     {
+                        getCallStateTimer.Stop();
+
                         isWindowSwitched = true;
-                        //Call call = new Call()
-                        //call.Show();
+                        Call call = new Call(serverInteraction, tcpClient, calledToken, calledLogin, calledUserIP, isSomebodyRingingTimer);
+                        call.Show();
                         Close();
                     });
 
                     break;
+                case Command.GetCallStateAccepted:
+                    serverInteraction.SendGetContactIP(tcpClient, calledToken);
+                    break;
                 case Command.GetCallStateDeclined:
                     Application.Current.Dispatcher.Invoke(delegate
                     {
+                        getCallStateTimer.Stop();
+
                         MessageBox.Show(calledLogin + " odrzucił Twoją prośbę o rozmowę.", "Prośba odrzucona", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                        getCallStateTimer.Stop();
                         isSomebodyRingingTimer.Start();
 
                         isWindowSwitched = true;
