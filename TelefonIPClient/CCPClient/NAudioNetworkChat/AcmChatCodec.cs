@@ -9,7 +9,7 @@ namespace NAudioDemo.NetworkChatDemo
     /// <summary>
     /// useful base class for deriving any chat codecs that will use ACM for decode and encode
     /// </summary>
-    abstract class AcmChatCodec : INetworkChatCodec
+    public abstract class AcmChatCodec : INetworkChatCodec
     {
         private readonly WaveFormat encodeFormat;
         private AcmStream encodeStream;

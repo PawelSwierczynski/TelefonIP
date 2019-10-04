@@ -3,7 +3,7 @@ using NAudio.Wave;
 
 namespace NAudioDemo.NetworkChatDemo
 {
-    class NetworkAudioPlayer : IDisposable
+    public class NetworkAudioPlayer : IDisposable
     {
         private readonly INetworkChatCodec codec;
         private readonly IAudioReceiver receiver;

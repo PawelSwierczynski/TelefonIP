@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace NAudioDemo.NetworkChatDemo
 {
-    class G722ChatCodec : INetworkChatCodec
+    public class G722ChatCodec : INetworkChatCodec
     {
         private readonly int bitrate;
         private readonly G722CodecState encoderState;

@@ -5,7 +5,7 @@ using NAudio.Codecs;
 
 namespace NAudioDemo.NetworkChatDemo
 {
-    class AcmMuLawChatCodec : AcmChatCodec
+    public class AcmMuLawChatCodec : AcmChatCodec
     {
         public AcmMuLawChatCodec()
             : base (new WaveFormat(8000,16,1), WaveFormat.CreateMuLawFormat(8000,1))

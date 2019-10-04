@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,6 +15,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using CSCPClient;
 using ClientServerCommunicationProtocol;
+using NAudioDemo.NetworkChatDemo;
 
 namespace TelefonIPClient
 {
@@ -24,9 +26,13 @@ namespace TelefonIPClient
         private readonly TCPClient tcpClient;
         private string calledToken;
         private string calledLogin;
+        private string calledIP;
         private readonly DispatcherTimer isSomebodyRingingTimer;
         private readonly DispatcherTimer getCallStateTimer;
         private TimeSpan callDuration;
+        private NetworkAudioPlayer networkAudioPlayer;
+        private NetworkAudioSender networkAudioSender;
+        private INetworkChatCodec networkChatCodec;
 
         public Call(ServerInteraction serverInteraction, TCPClient tcpClient, string calledToken, string calledLogin, string calledIP, DispatcherTimer isSomebodyRingingTimer)
         {
@@ -37,6 +43,7 @@ namespace TelefonIPClient
             this.tcpClient = tcpClient;
             this.tcpClient.SubscribeToReceiveAwaitedMessage(this);
             this.calledToken = calledToken;
+            this.calledIP = calledIP;
 
             Closed += new EventHandler(Window_Closed);
 
@@ -50,6 +57,18 @@ namespace TelefonIPClient
             getCallStateTimer.Tick += SendRequestToGetCallState;
             getCallStateTimer.Interval = new TimeSpan(0, 0, 1);
             getCallStateTimer.Start();
+
+            networkChatCodec = new G722ChatCodec();
+
+            Connect();
+        }
+
+        private void Connect()
+        {
+            IPEndPoint ipEndPoint = new IPEndPoint(new IPAddress(Encoding.UTF8.GetBytes(calledIP)), 17001);
+
+            networkAudioPlayer = new NetworkAudioPlayer(networkChatCodec, new UdpAudioReceiver(17001));
+            networkAudioSender = new NetworkAudioSender(networkChatCodec, 0, new UdpAudioSender(ipEndPoint));
         }
 
         private void Window_Closed(object sender, EventArgs e)
