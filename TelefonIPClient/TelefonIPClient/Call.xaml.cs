@@ -65,10 +65,11 @@ namespace TelefonIPClient
 
         private void Connect()
         {
-            IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse(calledIP), 17001);
+            IPEndPoint receiverEndPoint = new IPEndPoint(IPAddress.Any, 17001);
+            IPEndPoint senderEndPoint = new IPEndPoint(IPAddress.Parse(calledIP), 17001);
 
-            networkAudioPlayer = new NetworkAudioPlayer(networkChatCodec, new UdpAudioReceiver(ipEndPoint));
-            networkAudioSender = new NetworkAudioSender(networkChatCodec, 0, new UdpAudioSender(ipEndPoint));
+            networkAudioPlayer = new NetworkAudioPlayer(networkChatCodec, new UdpAudioReceiver(receiverEndPoint));
+            networkAudioSender = new NetworkAudioSender(networkChatCodec, 0, new UdpAudioSender(senderEndPoint));
         }
 
         private void Window_Closed(object sender, EventArgs e)
