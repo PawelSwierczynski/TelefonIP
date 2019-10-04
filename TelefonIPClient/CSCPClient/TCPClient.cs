@@ -120,6 +120,20 @@ namespace CSCPClient
             streamWriter.Flush();
         }
 
+        public void SendMessageWithOwnTokenAsData(Command command)
+        {
+            CSCPPacket message = new CSCPPacket(identifier, command, userToken, userToken.ToString());
+
+            identifierOfAwaitedResponse = identifier;
+
+            IncrementIdentifier();
+
+            sentMessages.Add(message);
+
+            streamWriter.Write(message.Serialize());
+            streamWriter.Flush();
+        }
+
         public void SendSilentMessage(Command command, string data)
         {
             CSCPPacket message = new CSCPPacket(identifier == 0 ? 65535 : identifier - 1, command, userToken, data);

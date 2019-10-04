@@ -97,7 +97,14 @@ namespace TelefonIPClient
 
         private void SendRequestToGetCallState(object sender, EventArgs e)
         {
-            serverInteraction.SendGetCallState(tcpClient, calledToken);
+            if (isUserCalling)
+            {
+                serverInteraction.SendGetCallState(tcpClient, calledToken);
+            }
+            else
+            {
+                serverInteraction.SendGetCallStateAsCalled(tcpClient);
+            }
 
             callDuration = callDuration.Add(new TimeSpan(0, 0, 1));
 
@@ -119,7 +126,14 @@ namespace TelefonIPClient
                 case Command.GetCallStateEnded:
                     getCallStateTimer.Stop();
 
-                    serverInteraction.SendResetCallState(tcpClient, calledToken);
+                    if (isUserCalling)
+                    {
+                        serverInteraction.SendResetCallState(tcpClient, calledToken);
+                    }
+                    else
+                    {
+                        serverInteraction.SendResetCallStateAsCalled(tcpClient);
+                    }
                     break;
                 case Command.ResetCallStateACK:
                 case Command.EndCallACK:
@@ -147,7 +161,14 @@ namespace TelefonIPClient
         {
             getCallStateTimer.Stop();
 
-            serverInteraction.SendEndCall(tcpClient, calledToken);
+            if (isUserCalling)
+            {
+                serverInteraction.SendEndCall(tcpClient, calledToken);
+            }
+            else
+            {
+                serverInteraction.SendEndCallAsCalled(tcpClient);
+            }
         }
     }
 }

@@ -86,5 +86,20 @@ namespace CSCPClient
         {
             tcpClient.SendMessage(Command.ResetCallStateRequest, calledToken);
         }
+
+        public void SendGetCallStateAsCalled(TCPClient tcpClient)
+        {
+            tcpClient.SendMessageWithOwnTokenAsData(Command.GetCallStateRequest);
+        }
+
+        public void SendEndCallAsCalled(TCPClient tcpClient)
+        {
+            tcpClient.SendMessageWithOwnTokenAsData(Command.EndCallRequest);
+        }
+
+        public void SendResetCallStateAsCalled(TCPClient tcpClient)
+        {
+            tcpClient.SendMessageWithOwnTokenAsData(Command.ResetCallStateRequest);
+        }
     }
 }
