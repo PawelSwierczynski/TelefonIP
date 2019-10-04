@@ -123,14 +123,13 @@ namespace TelefonIPClient
                     break;
                 case Command.ResetCallStateACK:
                 case Command.EndCallACK:
-                    networkAudioPlayer.Dispose();
-                    networkAudioSender.Dispose();
-                    networkChatCodec.Dispose();
-
-                    isSomebodyRingingTimer.Start();
-
                     Application.Current.Dispatcher.Invoke(delegate
                     {
+                        networkAudioPlayer.Dispose();
+                        networkAudioSender.Dispose();
+                        networkChatCodec.Dispose();
+
+                        isSomebodyRingingTimer.Start();
                         isWindowSwitched = true;
                         Contacts contacts = new Contacts(serverInteraction, tcpClient, isSomebodyRingingTimer);
                         contacts.Show();
@@ -149,17 +148,6 @@ namespace TelefonIPClient
             getCallStateTimer.Stop();
 
             serverInteraction.SendEndCall(tcpClient, calledToken);
-
-            networkAudioPlayer.Dispose();
-            networkAudioSender.Dispose();
-            networkChatCodec.Dispose();
-
-            isSomebodyRingingTimer.Start();
-
-            isWindowSwitched = true;
-            Contacts contacts = new Contacts(serverInteraction, tcpClient, isSomebodyRingingTimer);
-            contacts.Show();
-            Close();
         }
     }
 }
