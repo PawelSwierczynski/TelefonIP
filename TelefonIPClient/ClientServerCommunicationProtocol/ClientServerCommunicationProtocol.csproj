@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AudioCodec.cs" />
     <Compile Include="CallingState.cs" />
     <Compile Include="CallingUser.cs" />
     <Compile Include="Command.cs" />

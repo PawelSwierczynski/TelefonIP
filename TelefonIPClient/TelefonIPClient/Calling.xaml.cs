@@ -26,6 +26,7 @@ namespace TelefonIPClient
         private string calledLogin;
         private readonly DispatcherTimer isSomebodyRingingTimer;
         private readonly DispatcherTimer getCallStateTimer;
+        private AudioCodec calledAudioCodec;
 
         public Calling(ServerInteraction serverInteraction, TCPClient tcpClient, string calledToken, string calledLogin, DispatcherTimer isSomebodyRingingTimer)
         {
@@ -44,6 +45,7 @@ namespace TelefonIPClient
 
             this.calledLogin = calledLogin;
             CallingLabel.Content = "Dzwonisz do " + this.calledLogin + ".";
+            calledAudioCodec = AudioCodec.G722;
 
             getCallStateTimer = new DispatcherTimer();
             getCallStateTimer.Tick += SendRequestToGetCallState;
@@ -84,13 +86,15 @@ namespace TelefonIPClient
                         getCallStateTimer.Stop();
 
                         isWindowSwitched = true;
-                        Call call = new Call(serverInteraction, tcpClient, calledToken, calledLogin, calledUserIP, isSomebodyRingingTimer, true);
+                        Call call = new Call(serverInteraction, tcpClient, calledToken, calledLogin, calledUserIP, isSomebodyRingingTimer, true, calledAudioCodec);
                         call.Show();
                         Close();
                     });
 
                     break;
                 case Command.GetCallStateAccepted:
+                    calledAudioCodec = (AudioCodec)int.Parse(message.Data);
+
                     serverInteraction.SendGetContactIP(tcpClient, calledToken);
                     break;
                 case Command.GetCallStateDeclined:

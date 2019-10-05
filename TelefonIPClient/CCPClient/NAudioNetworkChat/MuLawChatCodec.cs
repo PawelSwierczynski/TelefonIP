@@ -16,7 +16,7 @@ namespace NAudioDemo.NetworkChatDemo
     }
 
 
-    class MuLawChatCodec : INetworkChatCodec
+    public class MuLawChatCodec : INetworkChatCodec
     {
         public string Name => "G.711 mu-law";
 

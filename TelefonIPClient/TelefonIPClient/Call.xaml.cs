@@ -35,7 +35,7 @@ namespace TelefonIPClient
         private INetworkChatCodec networkChatCodec;
         private bool isUserCalling;
 
-        public Call(ServerInteraction serverInteraction, TCPClient tcpClient, string calledToken, string calledLogin, string calledIP, DispatcherTimer isSomebodyRingingTimer, bool isUserCalling)
+        public Call(ServerInteraction serverInteraction, TCPClient tcpClient, string calledToken, string calledLogin, string calledIP, DispatcherTimer isSomebodyRingingTimer, bool isUserCalling, AudioCodec preferedAudioCodec)
         {
             InitializeComponent();
 
@@ -62,7 +62,23 @@ namespace TelefonIPClient
             getCallStateTimer.Interval = new TimeSpan(0, 0, 1);
             getCallStateTimer.Start();
 
-            networkChatCodec = new G722ChatCodec();
+            switch (preferedAudioCodec) {
+                case AudioCodec.G711ALaw:
+                    networkChatCodec = new AcmALawChatCodec();
+                    break;
+                case AudioCodec.G711MuLaw:
+                    networkChatCodec = new AcmMuLawChatCodec();
+                    break;
+                case AudioCodec.G722:
+                    networkChatCodec = new G722ChatCodec();
+                    break;
+                case AudioCodec.GSM610:
+                    networkChatCodec = new Gsm610ChatCodec();
+                    break;
+                case AudioCodec.TrueSpeech:
+                    networkChatCodec = new TrueSpeechChatCodec();
+                    break;
+            }
 
             Connect();
         }

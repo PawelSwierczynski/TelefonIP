@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ namespace TelefonIPClient
         private readonly string callingUserToken;
         private string callingUserIP;
         private string callingUserLogin;
+        private AudioCodec preferedAudioCodec;
 
         public IncomingCall(ServerInteraction serverInteraction, TCPClient tcpClient, DispatcherTimer isSomebodyRingingTimer, string callingUserToken)
         {
@@ -43,6 +45,9 @@ namespace TelefonIPClient
 
             this.isSomebodyRingingTimer = isSomebodyRingingTimer;
             this.isSomebodyRingingTimer.Stop();
+
+            string settings = File.ReadAllText("settings.ini");
+            preferedAudioCodec = (AudioCodec)int.Parse(settings);
 
             serverInteraction.SendGetContactIP(tcpClient, callingUserToken);
         }
@@ -77,7 +82,7 @@ namespace TelefonIPClient
                     Application.Current.Dispatcher.Invoke(delegate
                     {
                         isWindowSwitched = true;
-                        Call call = new Call(serverInteraction, tcpClient, callingUserToken, callingUserLogin, callingUserIP, isSomebodyRingingTimer, false);
+                        Call call = new Call(serverInteraction, tcpClient, callingUserToken, callingUserLogin, callingUserIP, isSomebodyRingingTimer, false, preferedAudioCodec);
                         call.Show();
                         Close();
                     });
@@ -103,7 +108,7 @@ namespace TelefonIPClient
 
         private void AcceptCallButton_Click(object sender, RoutedEventArgs e)
         {
-            serverInteraction.SendAcceptCall(tcpClient);
+            serverInteraction.SendAcceptCall(tcpClient, preferedAudioCodec);
         }
 
         private void DeclineCallButton_Click(object sender, RoutedEventArgs e)

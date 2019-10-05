@@ -62,9 +62,9 @@ namespace CSCPClient
             tcpClient.SendMessage(Command.StartRingingRequest, contactToken);
         }
 
-        public void SendAcceptCall(TCPClient tcpClient)
+        public void SendAcceptCall(TCPClient tcpClient, AudioCodec audioCodec)
         {
-            tcpClient.SendMessage(Command.AcceptCallRequest, "");
+            tcpClient.SendMessage(Command.AcceptCallRequest, audioCodec.ToString());
         }
 
         public void SendDeclineCall(TCPClient tcpClient)

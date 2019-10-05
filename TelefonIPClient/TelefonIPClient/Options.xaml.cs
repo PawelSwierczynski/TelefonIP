@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,14 +18,14 @@ using ClientServerCommunicationProtocol;
 
 namespace TelefonIPClient
 {
-    public partial class MainMenu : Window, IMessageReceiver
+    public partial class Options : Window, IMessageReceiver
     {
         private bool isWindowSwitched;
         private readonly ServerInteraction serverInteraction;
         private readonly TCPClient tcpClient;
         private readonly DispatcherTimer isSomebodyRingingTimer;
 
-        public MainMenu(ServerInteraction serverInteraction, TCPClient tcpClient)
+        public Options(ServerInteraction serverInteraction, TCPClient tcpClient, DispatcherTimer isSomebodyRingingTimer)
         {
             InitializeComponent();
 
@@ -35,22 +36,8 @@ namespace TelefonIPClient
 
             Closed += new EventHandler(Window_Closed);
 
-            isSomebodyRingingTimer = new DispatcherTimer();
-            isSomebodyRingingTimer.Tick += SendRequestToCheckIfSomebodyIsRinging;
-            isSomebodyRingingTimer.Interval = new TimeSpan(0, 0, 3);
-            isSomebodyRingingTimer.Start();
-        }
-
-        public MainMenu(ServerInteraction serverInteraction, TCPClient tcpClient, DispatcherTimer isSomebodyRingingTimer)
-        {
-            InitializeComponent();
-
-            isWindowSwitched = false;
-            this.serverInteraction = serverInteraction;
-            this.tcpClient = tcpClient;
-            this.tcpClient.SubscribeToReceiveAwaitedMessage(this);
-
-            Closed += new EventHandler(Window_Closed);
+            int preferedCodecIndex = int.Parse(File.ReadAllText("settings.ini"));
+            AudioCodecsComboBox.SelectedIndex = preferedCodecIndex;
 
             this.isSomebodyRingingTimer = isSomebodyRingingTimer;
         }
@@ -61,11 +48,6 @@ namespace TelefonIPClient
             {
                 tcpClient.Stop();
             }
-        }
-
-        private void SendRequestToCheckIfSomebodyIsRinging(object sender, EventArgs e)
-        {
-            serverInteraction.SendGetIsSomebodyRinging(tcpClient);
         }
 
         public void RetrieveAwaitedMessage(CSCPPacket message)
@@ -92,19 +74,18 @@ namespace TelefonIPClient
             }
         }
 
-        private void ContactsButton_Click(object sender, RoutedEventArgs e)
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            isWindowSwitched = true;
-            Contacts contacts = new Contacts(serverInteraction, tcpClient, isSomebodyRingingTimer);
-            contacts.Show();
-            Close();
+            int selectedAudioCodecIndex = AudioCodecsComboBox.SelectedIndex;
+
+            File.WriteAllText("settings.ini", selectedAudioCodecIndex.ToString());
         }
 
-        private void OptionsButton_Click(object sender, RoutedEventArgs e)
+        private void ReturnButton_Click(object sender, RoutedEventArgs e)
         {
             isWindowSwitched = true;
-            Options options = new Options(serverInteraction, tcpClient, isSomebodyRingingTimer);
-            options.Show();
+            MainMenu mainMenu = new MainMenu(serverInteraction, tcpClient, isSomebodyRingingTimer);
+            mainMenu.Show();
             Close();
         }
     }
