@@ -228,7 +228,7 @@ namespace TelefonIPServer
                     switch (callingStates[calledToken].CallingState)
                     {
                         case CallingState.CallAccepted:
-                            ReplyMessage(message.Identifier, Command.GetCallStateAccepted, message.UserToken, callingStates[calledToken].PreferedAudioCodec.ToString(), streamWriter);
+                            ReplyMessage(message.Identifier, Command.GetCallStateAccepted, message.UserToken, ((int)callingStates[calledToken].PreferedAudioCodec).ToString(), streamWriter);
                             break;
                         case CallingState.CallDeclined:
                             ReplyMessage(message.Identifier, Command.GetCallStateDeclined, message.UserToken, "", streamWriter);

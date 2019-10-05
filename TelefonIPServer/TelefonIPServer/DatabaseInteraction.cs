@@ -241,7 +241,7 @@ namespace TelefonIPServer
             {
                 var contactID = (from contact in database.Contacts
                                  orderby contact.ContactID descending
-                                 select contact.ContactID).SingleOrDefault() + 1;
+                                 select contact.ContactID).FirstOrDefault() + 1;
 
                 var userID = (from user in database.Users
                               where user.Token == token
