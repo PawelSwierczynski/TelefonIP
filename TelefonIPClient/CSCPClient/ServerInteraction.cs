@@ -64,7 +64,7 @@ namespace CSCPClient
 
         public void SendAcceptCall(TCPClient tcpClient, AudioCodec audioCodec)
         {
-            tcpClient.SendMessage(Command.AcceptCallRequest, audioCodec.ToString());
+            tcpClient.SendMessage(Command.AcceptCallRequest, ((int)audioCodec).ToString());
         }
 
         public void SendDeclineCall(TCPClient tcpClient)

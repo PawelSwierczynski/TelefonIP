@@ -244,18 +244,10 @@ namespace TelefonIPServer
 
                     callingStates[callingStatesIndex].CallingState = CallingState.EndedCall;
 
-                    foreach (var element in callingStates)
-                    {
-                        Console.WriteLine(element.Key + ", " + element.Value.Token + ", " + element.Value.CallingState);
-                    }
-
                     ReplyMessage(message.Identifier, Command.EndCallACK, message.UserToken, "", streamWriter);
                     break;
                 case Command.ResetCallStateRequest:
                     int callingStateToBeReset = int.Parse(message.Data);
-
-                    Console.WriteLine(callingStateToBeReset);
-                    Console.WriteLine(callingStates[callingStateToBeReset].CallingState);
 
                     callingStates[callingStateToBeReset].Token = "";
                     callingStates[callingStateToBeReset].CallingState = CallingState.Idle;
