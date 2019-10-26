@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,9 +27,11 @@ namespace TelefonIPClient
         {
             InitializeComponent();
 
+            string ipAddress = File.ReadAllText("server_address.txt");
+
             isWindowSwitched = false;
             serverInteraction = new ServerInteraction();
-            tcpClient = new TCPClient("192.168.1.10", 17000);
+            tcpClient = new TCPClient(ipAddress, 17000);
             tcpClient.SubscribeToReceiveAwaitedMessage(this);
             tcpClient.Start();
 
